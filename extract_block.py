@@ -15,18 +15,3 @@ with open("docs/output_blocks.txt", "w", encoding="utf-8") as out:
         out.write("\f\n")
 
 doc.close()
-
-# import pymupdf
-
-# doc = pymupdf.open("BAchra payment terms.pdf")
-# with open("output_blocks.txt", "wb") as out:
-#     for page in doc:
-#         blocks = page.get_text("blocks", sort=False)
-#         for block in blocks:
-#             text = block[4] if len(block) > 4 else ""
-#             if text:
-#                 out.write(text.encode("utf-8"))
-#                 out.write(b"\n")
-#         out.write(b"\x0c")
-
-# doc.close()
