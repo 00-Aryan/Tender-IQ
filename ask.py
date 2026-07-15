@@ -1,4 +1,4 @@
-from config.llm_config import get_llm
+from config.llm_config import get_llm, PROVIDER_CONFIGS
 
 
 def extract_content(response) -> str:
@@ -7,35 +7,23 @@ def extract_content(response) -> str:
         return content[0]['text']
     return content
 
+
 def ask_llm(question: str, model_provider: str) -> str:
-    llm = get_llm()
-    if model_provider == "gemini":
-        response = llm.invoke(question)
-        output = extract_content(response)
-        
-        print(f"\n Gemini Output \n{output}")
-        return output
     
-
-    elif model_provider == "openai":
-        configured_llm = llm.with_config(
-            configurable={
-            "tendderiq_model_provider": "openai", # Switches the internal provider class
-            "tendderiq_base_url": "https://openrouter.ai/api/v1",
-            "tendderiq_model": "openai/gpt-4o-mini", # Adjust to your OpenRouter model name
-            "tendderiq_temperature": 0.7,
-        }
-        )
-        response = configured_llm.invoke(question)
-        output = extract_content(response)
-        
-
-        print(f"\n OpenAI Output \n{output}")
-        return output
-    else:
+    if model_provider not in PROVIDER_CONFIGS:
         raise ValueError(f"Unsupported provider: {model_provider}")
+    
+    llm = get_llm()
+    config = PROVIDER_CONFIGS[model_provider]
+    configured_llm = llm.with_config(configurable=config)
+    response = configured_llm.invoke(question)
+    return extract_content(response)
     
 if __name__ == "__main__":
     test_question = "What is the capital of India?"
-    ask_llm(test_question, model_provider="gemini")
-    ask_llm(test_question, model_provider="openai")
+    
+    gemini_answer = ask_llm(test_question, model_provider="gemini")
+    print(f"\nGemini Output:\n{gemini_answer}")
+    
+    openai_answer = ask_llm(test_question, model_provider="openai")
+    print(f"\nOpenAI Output:\n{openai_answer}")
