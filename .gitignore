@@ -3,4 +3,5 @@ Tender
 .venv
 .env
 __pycache__/
-TRY
+*.py[cod]
+*.egg-info/

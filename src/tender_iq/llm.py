@@ -1,4 +1,4 @@
-from config.llm_config import get_llm, PROVIDER_CONFIGS
+from .config.llm_config import get_llm, PROVIDER_CONFIGS
 
 
 def extract_content(response) -> str:
@@ -8,7 +8,7 @@ def extract_content(response) -> str:
     return content
 
 
-def ask_llm(question: str, model_provider: str) -> str:
+def ask_llm(prompt, model_provider: str) -> str:
     
     if model_provider not in PROVIDER_CONFIGS:
         raise ValueError(f"Unsupported provider: {model_provider}")
@@ -16,7 +16,7 @@ def ask_llm(question: str, model_provider: str) -> str:
     llm = get_llm()
     config = PROVIDER_CONFIGS[model_provider]
     configured_llm = llm.with_config(configurable=config)
-    response = configured_llm.invoke(question)
+    response = configured_llm.invoke(prompt)
     return extract_content(response)
     
 if __name__ == "__main__":

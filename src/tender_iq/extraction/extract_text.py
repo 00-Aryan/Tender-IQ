@@ -1,6 +1,6 @@
 import pymupdf
 
-doc = pymupdf.open("Tender/BAchra payment terms.pdf")
+doc = pymupdf.open("/home/aryan/June-2026/Tender_IQ/data/tenders/31-mAY/Bachra.pdf")
 with open("docs/output_text.txt", "wb") as out:
     for page_number, page in enumerate(doc, start=1):
         header = f"\n===== Page {page_number} =====\n".encode("utf-8")
