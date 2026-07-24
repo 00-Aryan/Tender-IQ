@@ -5,3 +5,4 @@ Tender
 __pycache__/
 *.py[cod]
 *.egg-info/
+data
