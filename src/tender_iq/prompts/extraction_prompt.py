@@ -1,4 +1,4 @@
-from tender_iq.llm import ask_llm
+from tender_iq.config.ask_llm import ask_llm
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 

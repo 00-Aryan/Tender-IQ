@@ -1,4 +1,4 @@
-from .config.llm_config import get_llm, PROVIDER_CONFIGS
+from .llm_config import get_llm, PROVIDER_CONFIGS
 
 
 def extract_content(response) -> str:
