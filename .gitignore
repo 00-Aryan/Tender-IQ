@@ -8,3 +8,6 @@ __pycache__/
 data
 experiments
 .vscode
+
+AGENTS.md
+.agents/*
