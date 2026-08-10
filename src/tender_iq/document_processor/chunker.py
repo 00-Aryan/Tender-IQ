@@ -17,10 +17,12 @@ def chunk_tender_documents(markdown_text: str) -> list:
     md_header_splits = markdown_splitter.split_text(markdown_text)
 
     # Step 2: split oversized sections into smaller character-based chunks
-    chunk_size = 1000
+    chunk_size = 1200
     chunk_overlap = 100
     text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=chunk_size, chunk_overlap=chunk_overlap
+        chunk_size=chunk_size, 
+        chunk_overlap=chunk_overlap,
+        separators=["\n\n", "\n", " ", ""]
     )
 
     # Step 3: return list of Documents with metadata intact

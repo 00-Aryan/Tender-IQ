@@ -11,3 +11,4 @@ experiments
 
 AGENTS.md
 .agents/*
+.streamlit

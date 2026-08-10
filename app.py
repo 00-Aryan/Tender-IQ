@@ -1,7 +1,7 @@
-import streamlit as st
-import tempfile
 import os
 import re
+import tempfile
+import streamlit as st
 
 from tender_iq.document_processor.loader import load_tender_pdf
 from tender_iq.document_processor.chunker import chunk_tender_documents
@@ -10,10 +10,14 @@ from tender_iq.rag.tender_rag import build_rag_chain
 
 st.set_page_config(page_title="TenderIQ", layout="centered")
 
+# ── INITIALIZE ALL SESSION STATE KEYS ─────────────────────────────────────────
 st.session_state.setdefault("app_state", "UPLOAD")
 st.session_state.setdefault("tender_id", None)
 st.session_state.setdefault("rag_chain", None)
+st.session_state.setdefault("chunks", None)
+st.session_state.setdefault("messages", [])
 st.session_state.setdefault("processing_error", None)
+st.session_state.setdefault("tmp_path", None)
 
 # ── UPLOAD ──────────────────────────────────────────────────────────────────
 if st.session_state.app_state == "UPLOAD":
@@ -50,10 +54,12 @@ elif st.session_state.app_state == "PROCESSING":
 
             markdown_text = load_tender_pdf(tmp_path)
             chunks = chunk_tender_documents(markdown_text)
-            store_tender(chunks, tender_id)
-            rag_chain = build_rag_chain(tender_id)
 
-            st.session_state.rag_chain = rag_chain
+            store_tender(chunks, tender_id)
+
+            # Preserve chunks and built chain across session reruns
+            st.session_state.chunks = chunks
+            st.session_state.rag_chain = build_rag_chain(tender_id, chunks)
 
             if os.path.exists(tmp_path):
                 os.unlink(tmp_path)
@@ -82,16 +88,23 @@ elif st.session_state.app_state == "CHAT":
 
     st.divider()
 
+    # Render previous discussion thread
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.write(message["content"])
+
     prompt = st.chat_input("Ask a question about this tender...")
 
     if prompt:
         with st.chat_message("user"):
             st.write(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
 
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 try:
                     response = st.session_state.rag_chain.invoke(prompt)
                     st.write(response)
-                except Exception:
-                    st.error("Could not process your question. Please try again.")
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+                except Exception as e:
+                    st.error(f"Could not process your question: {str(e)}")
