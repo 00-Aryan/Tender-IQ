@@ -21,6 +21,7 @@ class TenderFinancials(BaseModel):
 class FleetSpecification(BaseModel):
     vehicle_type: Optional[str] = Field(None, description="e.g., Sedan, SUV, 32-Seater Bus, Tipper")
     minimum_quantity: Optional[int] = Field(None, description="Minimum number of vehicles required")
+    estimated_km_per_month: Optional[int] = Field(None, description="Monthly estimated distance in KM")
     max_vehicle_age_years: Optional[int] = Field(None, description="Maximum allowed age of vehicle from registration date")
     ownership_required: Optional[bool] = Field(None, description="True if ownership is mandatory, False if leased is allowed")
     scope_of_work: Optional[str] = Field(None, description="what type of work is it where the vehicle will run under whome")
@@ -41,6 +42,8 @@ class EligibilityCriteria(BaseModel):
 class Dates(BaseModel):
     submission_deadline : Optional[date] = Field(None, description="Bid submission deadline")
     opening_date : Optional[date] = Field(None, description="Bid Opening date")
+    contract_period: Optional[str] = Field(None, description="Contract period as stated, e.g., '2 Year(s)'")
+    duration_months: Optional[int] = Field(None, description="Contract duration normalized into months, e.g., 24")
 
 class LegalCompliance(BaseModel):
     written_consent_regarding_arbitration: Optional[str] = Field(
@@ -65,6 +68,7 @@ class LegalCompliance(BaseModel):
     )
 
 class TenderRequirements(BaseModel):
+    bid_id: Optional[str] = Field(None, description="Unique Bid ID / GeM Tender Number")
     financials: TenderFinancials
     eligibility: EligibilityCriteria
     fleet: FleetSpecification

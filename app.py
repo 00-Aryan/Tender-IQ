@@ -52,9 +52,13 @@ elif st.session_state.app_state == "PROCESSING":
             tmp_path = st.session_state.tmp_path
             tender_id = st.session_state.tender_id
 
+            # conversion to markdown 
             markdown_text = load_tender_pdf(tmp_path)
+
+            # split the markdown text into chunks for vectorization and storage
             chunks = chunk_tender_documents(markdown_text)
 
+            # store the chunks in the vector store for retrieval
             store_tender(chunks, tender_id)
 
             # Preserve chunks and built chain across session reruns

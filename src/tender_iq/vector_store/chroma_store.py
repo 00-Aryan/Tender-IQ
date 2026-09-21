@@ -38,7 +38,6 @@ def store_tender(chunks: list[Document], tender_id: str) -> int:
     vector_store = get_vector_store()
 
     #add the chunk to vector store 
-    
     vector_store.add_documents(chunks)
 
     # return number of chunks stored
