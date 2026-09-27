@@ -1,330 +1,181 @@
 # TenderIQ
 
-AI-powered vehicle tender intelligence assistant for GeM portal tenders.
+> A document-grounded intelligence assistant that turns GeM vehicle tender PDFs into searchable, explainable answers for small businesses.
 
-TenderIQ helps users understand complex GeM tender PDFs through document-grounded question answering.
-
----
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![LangChain](https://img.shields.io/badge/Orchestration-LangChain-1C3C3C)](https://www.langchain.com/)
+[![ChromaDB](https://img.shields.io/badge/Retrieval-ChromaDB-F5A623)](https://www.trychroma.com/)
+[![Tests](https://img.shields.io/badge/Tests-pytest-0A9EDC?logo=pytest&logoColor=white)](https://pytest.org/)
 
 ## The Problem
 
-GeM tender documents are dense, legally worded PDFs — often 30–80 pages. Small business owners applying for vehicle-related tenders face:
+GeM tender PDFs bury deadlines, EMD requirements, fleet specifications, eligibility clauses, and document checklists across dense legal and technical language. A bidder should not need to read an 80-page document line by line, or trust an answer that cannot point back to the source.
 
-- Eligibility requirements buried across multiple pages
-- Confusion around EMD, security money, and working capital
-- Language barriers and technical jargon
-- Dependency on consultants charging Rs. 800–1500 per tender
-- No way to know if they qualify before spending hours reading
+## The Solution
 
-Most users do not know what questions to ask — let alone where to find the answers.
+TenderIQ provides a focused workflow:
 
----
+1. Upload a vehicle tender PDF through Streamlit.
+2. Extract structured bid fields and index the full document.
+3. Ask questions in plain language.
+4. Retrieve relevant tender sections and generate a grounded answer with source snippets.
 
-## What It Does (v1)
+The system is deliberately scoped to vehicle-related tenders and instructs the LLM not to invent facts or claim official eligibility.
 
-Upload a vehicle tender PDF. Ask questions in plain language. Get grounded answers.
+## Engineering Highlights
 
+### Hybrid retrieval for legal documents
+
+Tender language contains both exact procurement terms and semantic variations. TenderIQ combines:
+
+- **BM25 lexical retrieval** for exact terms such as `Bid End Date/Time` and `EMD Amount`.
+- **ChromaDB vector retrieval** using `all-MiniLM-L6-v2` embeddings and filtered MMR search.
+- **Weighted ensemble ranking** with BM25/vector weights of `0.4/0.6`.
+- **Multi-query expansion** that generates alternative procurement phrasings before batch retrieval.
+- **Content-hash deduplication** so overlapping query results do not duplicate context.
+
+This is implemented with LangChain's `EnsembleRetriever`; the repository does not currently implement literal Reciprocal Rank Fusion (RRF).
+
+### Token-conscious intent gating
+
+Simple greetings and polite phrases are recognized before database, retrieval, query-expansion, or answer-generation work begins. They receive a deterministic response, avoiding unnecessary model calls and retrieval cost for non-document questions.
+
+### Decoupled asynchronous ingestion
+
+The Streamlit frontend is an HTTP client, not the pipeline runtime. FastAPI accepts an upload, persists a processing record in SQLite, schedules an in-process `BackgroundTasks` job, and returns HTTP 202 immediately. Streamlit polls the job status while the backend performs extraction, chunking, embedding, Chroma indexing, and persistence.
+
+### Dual-purpose document processing
+
+The ingestion path intentionally uses two representations:
+
+- The first six PDF pages are plain-text extracted and parsed with regex into a typed `TenderRequirements` model.
+- The full PDF is converted to Markdown with page markers, structurally chunked, and indexed for retrieval.
+
+This keeps structured metadata fast and predictable while preserving the full document for question answering.
+
+## Architecture
+
+```text
+                         Upload / Chat HTTP
+Streamlit app.py ------------------------------------+
+                                                      |
+                         FastAPI main.py              v
+                   +--------------------+     API routers
+                   | SQLite TenderRecord|<---- CRUD layer
+                   +--------------------+
+                              |
+                    BackgroundTasks (202)
+                              v
+                      services/ingestion.py
+                              |
+        +---------------------+----------------------+
+        |                                            |
+  First 6 pages                              Full PDF
+        |                                            |
+  PyMuPDF -> regex parser                  pymupdf4llm Markdown
+        |                                            |
+  TenderRequirements                 header + recursive chunking
+        |                                            |
+  SQLite JSON specs                         ChromaDB + embeddings
+                                                     |
+                                                     v
+Chat request -> services/chat.py -> query expansion -> BM25 + MMR
+                                                     |
+                                  grounded prompt -> Gemini -> response
 ```
-What is the EMD amount?             → Extracted directly from document
-What vehicles are required?         → Fleet requirements explained
-What documents must I submit?       → Document checklist extracted
-Explain this clause simply.         → Plain language explanation
-What is the working capital needed? → Financial requirements clarified
-```
 
-The answer prompt requires responses to use the uploaded document and not claim official eligibility. Citation selection is a known limitation described below.
+### Request lifecycle
 
----
+**Upload:** `app.py` sends `POST /api/v1/tenders/upload`. `tenders.py` saves the PDF to `temp_uploads/`, creates a `processing` record, and schedules `background_process_tender()`.
 
-## What Is Actually Built (Current State)
+**Ingestion:** `services/ingestion.py` calls `process_tender_pdf()`, assigns a document-hash fallback ID when no bid ID is extracted, chunks the full Markdown document, stores it in ChromaDB, and marks the SQLite record `completed`. Failures are persisted as `failed: ...`; the temporary file and database session are cleaned up.
 
-| Component | Status | Notes |
-|---|---|---|
-| PDF to markdown extraction | Done | `pymupdf4llm.to_markdown(page_chunks=True)` converts the full PDF and adds page markers |
-| Regex structured extraction | Done | `reg_ex_parser.py` extracts a limited set of bid, date, financial, fleet, and duration fields from the first six pages |
-| Structure-based chunking | Done | MarkdownHeaderTextSplitter + RecursiveCharacterTextSplitter, 1200-character chunks with 100-character overlap |
-| ChromaDB vector storage | Done | Local, persisted, filtered by tender_id |
-| HuggingFace embeddings | Done | all-MiniLM-L6-v2, CPU, lazy loaded |
-| LangChain RAG chain | Done | LCEL pipeline, query expansion, BM25 + MMR retrieval, Gemini |
-| FastAPI backend | Done | Upload, background processing status, specifications, and chat routes |
-| SQLite persistence | Done | SQLAlchemy stores processing status and serialized tender specifications |
-| Pydantic schema (TenderRequirements) | Done | Financials, eligibility, fleet, documents, dates, compliance |
-| Pydantic schema (UserProfile) | Done | Vehicle info, work orders, documents, turnover |
-| Structured extraction chain | Prototype | PydanticOutputParser experiment exists; active ingestion uses regex extraction |
-| Provider-agnostic LLM config | Partial | Gemini and OpenAI/OpenRouter configurations exist; the active model factory initializes Gemini |
-| Streamlit UI | Done | Upload + RAG chat, minimal |
-| Conversation memory | Not built | Each question is independent |
-| Eligibility matching engine | Not built | UserProfile exists, but no matcher consumes it |
-| LangGraph agent orchestration | Not built | No LangGraph dependency or implementation |
-| Structured logging | Not built | Runtime diagnostics currently use print() |
-| Deployment | Not done | Streamlit Cloud planned |
+**Polling:** Streamlit calls `GET /api/v1/tenders/{tender_id}/specs` until processing completes. Lookup supports both the generated job ID and extracted bid ID.
 
-The structured LLM extractor under `src/tender_iq/extraction/scripts/` is experimental. The active ingestion path uses regex extraction; incomplete extraction currently prints a fallback message but does not invoke an LLM fallback.
-
----
-
-## FastAPI Integration
-
-The Streamlit UI does not call the extraction or RAG modules directly. It expects the FastAPI application to be running at `http://127.0.0.1:8000`.
-
-### Routes
-
-| Method | Route | Behavior |
-|---|---|---|
-| `POST` | `/api/v1/tenders/upload` | Accepts a PDF upload, creates a `JOB-XXXXXXXX` processing record, saves a temporary file, and schedules background ingestion |
-| `GET` | `/api/v1/tenders/{tender_id}/specs` | Returns processing status and extracted specifications; lookup accepts the job ID or GeM bid ID |
-| `POST` | `/api/v1/chat/` | Validates a query, runs the chat/RAG service, and returns an answer with citation objects |
-
-`src/tender_iq/main.py` creates the FastAPI application, creates SQLite tables during startup, and registers the routers from `api/v1/endpoints/`. `api/schemas/` contains the Pydantic HTTP contracts. `db/session.py` supplies a request-scoped SQLAlchemy session through FastAPI dependency injection.
-
-The upload endpoint returns HTTP 202 immediately. FastAPI runs `services/ingestion.py::background_process_tender` in the background. The Streamlit processing screen polls the specs route until the status is `completed` or starts with `failed`.
-
----
+**Chat:** Streamlit sends `POST /api/v1/chat/`. `services/chat.py` loads structured specs and Chroma documents, builds the RAG chain, invokes query expansion and hybrid retrieval, then returns `ChatResponse` with the answer and up to three retrieved source snippets.
 
 ## Tech Stack
 
-| Layer | Tool | Why |
-|---|---|---|
-| UI | Streamlit `>=1.61.1` | Upload, processing polling, chat, and citation display |
-| Backend API | FastAPI `>=0.141.1` | Upload, asynchronous ingestion status, specifications, and chat routes |
-| Persistence | SQLite + SQLAlchemy `>=2.0.51` | Tender job status and JSON specifications |
-| PDF extraction | pymupdf4llm `>=1.27.2.3` + PyMuPDF `>=1.27.2.3` | Full Markdown indexing plus first-six-page plain-text extraction |
-| Text splitting | `langchain-text-splitters >=1.1.2` | Header-aware and recursive chunking |
-| Embeddings | sentence-transformers (all-MiniLM-L6-v2) | Free, local, no API cost |
-| Vector store | ChromaDB via `langchain-chroma >=1.1.0` | Local persisted vector storage |
-| Keyword retrieval | BM25 via `rank-bm25 >=0.2.2` | Lexical retrieval combined with vector retrieval |
-| LLM | Gemini via `langchain-google-genai >=4.2.7` | Query expansion and answer generation |
-| LLM framework | LangChain `>=1.3.12` + LCEL | Chain composition, prompts, retrieval, and output parsing |
-| Validation | Pydantic `>=2.13.4` | API and domain schema validation |
-| Configuration | python-dotenv `>=1.2.2` | Loads environment variables from `.env` |
-| Package manager | uv | Dependency resolution and lockfile management |
-
-Other direct dependencies include `langchain-classic`, `langchain-community`, `langchain-huggingface`, `langchain-openai`, `pandas`, `requests`, `pytest`, `torch`, and `pydantic[email]`. Exact version constraints are maintained in `pyproject.toml`; the project requires Python `>=3.12,<3.13`.
-
----
-
-## Architecture and Module Interaction
-
-```
-Streamlit `app.py`
-    → POST `/api/v1/tenders/upload`
-    |
-FastAPI `main.py` → `api/v1/endpoints/tenders.py`
-    → `crud/tenders.py` → SQLite `TenderRecord` with status `processing`
-    → FastAPI `BackgroundTasks`
-    |
-`services/ingestion.py::background_process_tender`
-    → `extraction/extract_data.py::process_tender_pdf`
-    → `document_processor/loader.py::load_pdf_text` (first 6 pages)
-    → `parser/reg_ex_parser.py::parse_with_regex`
-    → `models/tender_requirements.py::TenderRequirements`
-    |
-    → `document_processor/loader.py::load_tender_pdf` (full PDF Markdown)
-    → `document_processor/chunker.py::chunk_tender_documents`
-    → `vector_store/chroma_store.py::store_tender`
-    → ChromaDB with `tender_id`, page, section, subsection, and clause metadata
-    → `crud/tenders.py::update_parsed_tender`
-    |
-Streamlit polls `GET /api/v1/tenders/{tender_id}/specs`
-    → stores the real `bid_id` or deterministic document-hash fallback
-    |
-Streamlit chat
-    → POST `/api/v1/chat/`
-    → `services/chat.py::process_chat_query`
-    → SQLite lookup through `crud/tenders.py::get_tender_by_id`
-    → Chroma document lookup through `get_all_chunks_for_tender`
-    → `rag/tender_rag.py::build_rag_chain`
-    → `rag/query_transformers.py::build_multi_query_retrieval_chain`
-    → query expansion through `prompts/query_expansion_prompt.py`
-    → BM25 + filtered MMR retrieval
-    → `prompts/rag_prompt.py`
-    → Gemini through `config/llm_config.py::get_llm`
-    → `StrOutputParser`
-    → `ChatResponse` from `api/schemas/chat.py`
-    → Streamlit answer and citations
-
-### Ingestion details
-
-`background_process_tender` uses two extraction paths for different purposes. The first-six-page plain-text path produces structured `TenderRequirements` data for SQLite. The full Markdown path produces retrieval chunks for ChromaDB. If regex extraction does not find a bid ID, ingestion creates a `DOC_<12-character SHA-256 prefix>` identifier. On failure, the worker stores a `failed: ...` status, deletes the temporary PDF, and closes its database session.
-
-### Chat details
-
-Simple greetings such as `hello`, `thanks`, and `good morning` return a fixed response without database or vector lookup. Other queries retrieve all stored chunks for the tender, build an ensemble retriever, expand the query into multiple variants, deduplicate retrieved documents by content hash, and invoke the answer prompt.
-
-The chat service returns citations from the RAG result's `sources` list, so the displayed sources correspond to the documents passed into the answer prompt.
-
-### Active module map
-
-| Module | Responsibility |
+| Area | Implementation |
 |---|---|
-| `app.py` | Streamlit upload, polling, chat state, and API client |
-| `main.py` | FastAPI app, startup table creation, and router registration |
-| `api/v1/endpoints/` | HTTP route handlers |
-| `api/schemas/` | Pydantic request and response contracts |
-| `services/ingestion.py` | Background extraction, indexing, persistence, cleanup |
-| `services/chat.py` | Greeting handling, tender lookup, RAG invocation, response mapping |
-| `document_processor/` | PDF loading, Markdown conversion, page markers, and chunking |
-| `extraction/` and `parser/` | Structured extraction orchestration and regex parsing; script subdirectory contains experiments |
-| `models/` | Tender requirement and prospective bidder profile models |
-| `vector_store/` | Embedding model, Chroma persistence, BM25, MMR, and ensemble retrieval |
-| `rag/` | Query expansion, retrieval deduplication, context formatting, and RAG chain construction |
-| `prompts/` | Query-expansion, answer-generation, and experimental extraction prompts |
-| `config/` | Environment loading, LLM factory, and direct LLM helper |
-| `db/` and `crud/` | SQLAlchemy schema/session management and tender record operations |
-    |
-pymupdf4llm
-    → markdown text with preserved table structure
-    |
-MarkdownHeaderTextSplitter
-    → chunks split at clause/section boundaries
-    |
-RecursiveCharacterTextSplitter
-    → long clauses sub-chunked with 100-char overlap
-    |
-HuggingFace Embeddings (all-MiniLM-L6-v2)
-    → 384-dimensional vectors per chunk
-    |
-ChromaDB (local, persisted)
-    → stored with metadata: tender_id, section, subsection
-    |
-BM25 + MMR ensemble (MMR k=6, filtered by tender_id)
-    → diverse relevant chunks retrieved per question
-    |
-LangChain LCEL RAG Chain
-    → query expansion | retrieval | rag_prompt | Gemini | StrOutputParser
-    |
-Plain language answer → Streamlit UI
-```
+| Interface | Streamlit `>=1.61.1` |
+| API | FastAPI `>=0.141.1` |
+| Persistence | SQLite, SQLAlchemy `>=2.0.51`, JSON tender specs |
+| PDF processing | PyMuPDF and `pymupdf4llm >=1.27.2.3` |
+| Chunking | LangChain Markdown and recursive text splitters |
+| Embeddings | HuggingFace `all-MiniLM-L6-v2` via `sentence-transformers` |
+| Retrieval | ChromaDB, BM25, MMR, LangChain `EnsembleRetriever` |
+| LLM | Gemini through `langchain-google-genai` |
+| Orchestration | LangChain LCEL, prompt templates, output parsers |
+| Validation | Pydantic v2 |
+| Configuration | `python-dotenv` and provider configuration dictionaries |
+| Tooling | uv, pytest, Python 3.12 |
 
----
+See [pyproject.toml](pyproject.toml) for the complete dependency set and version constraints.
 
-## Scope
-
-v1 is intentionally constrained to vehicle-related tenders only:
-
-- LMV (Light Motor Vehicle) tenders
-- Logistics vehicle contracts
-- Vehicle rental tenders
-- Transport support contracts
-- Driver and vehicle service tenders
-
-This constraint improves extraction accuracy, reduces hallucinations, and makes the system genuinely useful rather than generically mediocre.
-
----
-
-## Known Limitations and Tradeoffs
-
-**Conversation memory not implemented**
-Each question is answered independently. The system has no memory of previous questions in the same session. Planned for next phase using LangChain RunnableWithMessageHistory.
-
-**Citation source selection**
-Page and section metadata are attached to chunks. Chat citations come from the same documents returned by the retrieval chain and used to generate the answer. The response currently exposes the first three retrieved sources.
-
-**Vehicle tender focus**
-Extraction fields and prompts focus on vehicle-related tenders, but the upload endpoint accepts any PDF and does not enforce this domain constraint.
-
-**Bilingual tenders**
-Some GeM tenders have Hindi and English headers. The repository does not include dedicated bilingual evaluation or language handling.
-
-**Table extraction**
-pymupdf4llm is used for Markdown conversion. Experimental table extraction scripts exist, but table accuracy is not covered by the current test suite.
-
-**Eligibility matching**
-The system answers questions about eligibility requirements but cannot automatically compare them against a business profile yet. That is the next phase.
-
-**API and runtime dependencies**
-The Streamlit UI and FastAPI backend are separate processes. The UI requires the backend to be available at `127.0.0.1:8000`; no authentication or user-level tender isolation is implemented.
-
----
-
-
-## Getting Started
+## Quick Start
 
 ```bash
-# Clone
 git clone https://github.com/00-Aryan/tenderiq.git
 cd tenderiq
 
-# Install dependencies (requires uv)
 uv sync
 
-# Create a .env file and add the required Gemini configuration.
+# Create .env and configure the Gemini API credentials.
 
-# Run
+# Terminal 1: start the FastAPI application with an ASGI server.
+uv run uvicorn tender_iq.main:app --app-dir src --reload
+
+# Terminal 2: start the Streamlit interface.
 uv run streamlit run app.py
 ```
 
-The FastAPI backend must also be running at `http://127.0.0.1:8000`; Streamlit sends upload, polling, and chat requests to that service.
+The UI expects the API at `http://127.0.0.1:8000`. The API exposes automatic documentation at `/docs` when running.
 
----
+## API Surface
 
-## Planned Improvements
+| Method | Route | Purpose |
+|---|---|---|
+| `POST` | `/api/v1/tenders/upload` | Accept a PDF and start background ingestion |
+| `GET` | `/api/v1/tenders/{tender_id}/specs` | Read processing status and extracted specs |
+| `POST` | `/api/v1/chat/` | Ask a question and receive an answer with citations |
 
-**Phase 2 — Intelligence**
-- Conversation memory — multi-turn Q&A with history
-- LangGraph eligibility agent — state machine comparing UserProfile against TenderRequirements
-- LLM fallback for incomplete regex extraction
-- Extraction validation and structured logging
-- Correct retrieval-source citation tests and improvements
+## Current Scope and Tradeoffs
 
-**Phase 3 — Polish**
-- Streamlit Cloud deployment
-- Demo video
-- pytest suite for eligibility engine
+- **Vehicle domain:** extraction fields and prompts target LMV, logistics, rental, transport-support, and driver/vehicle-service tenders. Upload validation currently checks only the `.pdf` extension.
+- **No conversation memory:** each backend query is independent; Streamlit stores prior messages for display only.
+- **Regex-first extraction:** structured extraction covers a limited field set. The LLM extraction fallback is experimental and not wired into ingestion.
+- **Citation depth:** citations are drawn from the retrieved source list, with the first three returned to the client.
+- **No authentication or tenant isolation:** the current local architecture is a single-user development system.
+- **No OCR fallback:** image-only scanned PDFs are not guaranteed to produce usable text.
+- **No production job queue:** FastAPI `BackgroundTasks` is suitable for the current workflow but is not a durable distributed worker system.
 
-**Future (post-v1)**
-- Hindi language support for bilingual tender responses
-- Page-level citation alongside section headers
-- Tesseract OCR fallback for image-only scanned PDFs
-- Pinecone or Qdrant for multi-user vector isolation
-- Redis caching for repeated tender queries
+## Testing
 
----
+```bash
+uv run pytest -q
+```
+
+The suite covers PDF loading, chunk metadata, RAG metadata formatting, FastAPI chat validation, route mapping, and citation-source mapping. It does not run live Gemini calls or cover a full upload-to-answer integration path with real Chroma data.
+
+## Roadmap
+
+- Conversation memory for multi-turn analysis
+- Eligibility matching between `UserProfile` and `TenderRequirements`
+- LLM fallback and validation for incomplete structured extraction
+- OCR support for scanned PDFs
+- Durable background workers, authentication, and multi-user vector isolation
+- Broader integration tests and production observability
 
 ## Project Status
 
-| Phase | Status |
-|---|---|
-| Phase 0 — PDF extraction validation | Done |
-| Phase 1 — Pydantic schemas | Done |
-| Phase 2 — Extraction chain + RAG pipeline | Done |
-| Phase 3 — Streamlit UI | Done (minimal) |
-| Phase 4 — Eligibility engine | Not built; UserProfile model exists |
-| Phase 5 — Memory + logging | Planned |
-| Phase 6 — Deployment | Planned |
-
----
-
-## Tests
-
-The repository currently includes tests for:
-
-- PDF Markdown loading and page markers
-- Header-based and page-based chunk metadata
-- RAG tender metadata formatting
-- FastAPI chat request validation and route response mapping
-- Chat citation mapping from RAG source documents
-
-There are no end-to-end tests covering a real PDF upload through background ingestion, Chroma indexing, retrieval, and LLM response generation. Extraction regexes, Chroma persistence, query expansion, and external LLM calls are not covered by live integration tests.
-
----
-
-## Portfolio Context
-
-This project demonstrates:
-
-- RAG architecture — chunking strategy, embedding, MMR retrieval, hallucination mitigation
-- LangChain LCEL — declarative pipeline composition, output parsing, provider abstraction
-- Document intelligence — structured extraction from unstructured legal PDFs
-- Pydantic schema design — nested models, validation, type enforcement
-- System design thinking — constrained intelligence over broad intelligence, conscious tradeoffs
-
----
+The core document-grounded Q&A path is implemented: Streamlit UI, FastAPI API, background ingestion, structured extraction, Chroma indexing, hybrid retrieval, and Gemini answer generation. Eligibility matching, conversation memory, structured logging, OCR, authentication, and deployment remain future work.
 
 ## Author
 
-Aryan Kumar
+**Aryan Kumar**  
 Final Year B.S. Data Science and Applications — IIT Madras
 
-GitHub: https://github.com/00-Aryan
-LinkedIn: https://linkedin.com/in/aryan-kumar-1969b819b/
+[GitHub](https://github.com/00-Aryan) · [LinkedIn](https://linkedin.com/in/aryan-kumar-1969b819b/)
