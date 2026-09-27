@@ -1,4 +1,4 @@
-from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
+from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from tender_iq.vector_store.chroma_store import get_ensemble_retriever
 from tender_iq.prompts.rag_prompt import rag_prompt
@@ -64,13 +64,13 @@ def build_rag_chain(tender_id: str, chunk: list , tender_obj=None):
     metadata_str = format_tender_metadata(tender_obj)
     configured_prompt = rag_prompt.partial(metadata_specs=metadata_str)
 
-    chain = ( 
-        RunnableParallel({
-            "context": retrieval_chain | RunnableLambda(format_docs),
-            'question': RunnablePassthrough()
+    def answer_with_sources(question: str):
+        retrieved_docs = retrieval_chain.invoke(question)
+        prompt_value = configured_prompt.invoke({
+            "context": format_docs(retrieved_docs),
+            "question": question,
         })
-        | configured_prompt
-        | llm
-        | parser
-    )
-    return chain
+        answer = parser.invoke(llm.invoke(prompt_value))
+        return {"answer": answer, "sources": retrieved_docs}
+
+    return RunnableLambda(answer_with_sources)

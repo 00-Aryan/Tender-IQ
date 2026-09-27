@@ -96,22 +96,22 @@ def process_chat_query(db: Session, tender_id: str, query: str) -> ChatResponse:
     if not chunks:
         raise ValueError(f"No vector documents found in ChromaDB for tender '{tender_id}'.")
 
-    # 3. Call your exact, unmodified RAG chain builder
+    # 3. Build the RAG chain and retain the documents used for the answer
     rag_chain = build_rag_chain(tender_id=tender_id, chunk=chunks, tender_obj=tender_specs)
 
     # 4. Invoke the chain with the user's query
-    answer = rag_chain.invoke(query)
+    rag_result = rag_chain.invoke(query)
+    answer = rag_result["answer"]
 
-    # 5. Extract citations from the retrieved documents for your CitationSource schema
-    # (We pull metadata from the chunks used during retrieval)
+    # 5. Cite the same documents that supplied the answer context
     citations = []
-    for chunk in chunks[:3]:  # Or grab the top sources used in the chain
+    for chunk in rag_result["sources"][:3]:
         meta = chunk.metadata
         citations.append(
             CitationSource(
                 page_number=meta.get("page_number"),
                 section=meta.get("subsection") or meta.get("section"),
-                snippet=chunk.page_content[:250] + "..." # Truncate snippet for clean UI display
+                snippet=chunk.page_content[:250] + "..."
             )
         )
 
