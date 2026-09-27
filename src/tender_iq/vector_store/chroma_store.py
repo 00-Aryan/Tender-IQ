@@ -28,19 +28,24 @@ def get_vector_store():
     )
 
 def store_tender(chunks: list[Document], tender_id: str) -> int:
-
-    # add tender_id to each chunk's metadata
-    for chunk in chunks:
-        chunk.metadata["tender_id"] = tender_id
-        # chunk.metadata["source_file"] = filename
-
-    #open the vector store 
     vector_store = get_vector_store()
 
-    #add the chunk to vector store 
-    vector_store.add_documents(chunks)
+    # 1. Clean Sweep: Purge any existing chunks for this tender_id
+    try:
+        vector_store._collection.delete(where={"tender_id": tender_id})
+    except Exception:
+        # If the collection is brand new or tender doesn't exist yet, continue safely
+        pass
 
-    # return number of chunks stored
+    # 2. Attach metadata and prepare IDs
+    for chunk in chunks:
+        chunk.metadata["tender_id"] = tender_id
+
+    ids = [f"{tender_id}_{i}" for i in range(len(chunks))]
+
+    # 3. Add clean documents with deterministic IDs
+    vector_store.add_documents(documents=chunks, ids=ids)
+
     return len(chunks)
 
 def get_retriever(tender_id: str, k: int = 6):
@@ -69,7 +74,7 @@ def get_ensemble_retriever(chunks: list, tender_id: str, k: int = 6):
 
     vector_retriever = get_retriever(tender_id=tender_id, k=k)
 
-    # Equalize weights so BM25 exact keyword hits aren't drowned out
+    
     return EnsembleRetriever(
         retrievers=[bm25_retriever, vector_retriever],
         weights=[0.4, 0.6]

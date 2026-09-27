@@ -12,3 +12,8 @@ experiments
 AGENTS.md
 .agents/*
 .streamlit
+demo*
+
+# Local databases and vector stores
+*.db
+.chroma/git add src/ app.py pyproject.toml uv.lock .gitignore

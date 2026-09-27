@@ -1,23 +1,17 @@
-import os
-import re
-import tempfile
+import time
+import requests
 import streamlit as st
 
-from tender_iq.document_processor.loader import load_tender_pdf
-from tender_iq.document_processor.chunker import chunk_tender_documents
-from tender_iq.vector_store.chroma_store import store_tender
-from tender_iq.rag.tender_rag import build_rag_chain
+API_BASE = "http://127.0.0.1:8000/api/v1"
 
 st.set_page_config(page_title="TenderIQ", layout="centered")
 
 # ── INITIALIZE ALL SESSION STATE KEYS ─────────────────────────────────────────
 st.session_state.setdefault("app_state", "UPLOAD")
+st.session_state.setdefault("job_id", None)
 st.session_state.setdefault("tender_id", None)
-st.session_state.setdefault("rag_chain", None)
-st.session_state.setdefault("chunks", None)
 st.session_state.setdefault("messages", [])
 st.session_state.setdefault("processing_error", None)
-st.session_state.setdefault("tmp_path", None)
 
 # ── UPLOAD ──────────────────────────────────────────────────────────────────
 if st.session_state.app_state == "UPLOAD":
@@ -31,54 +25,61 @@ if st.session_state.app_state == "UPLOAD":
     uploaded_file = st.file_uploader("Upload tender PDF", type=["pdf"])
 
     if uploaded_file is not None:
-        tender_id = re.sub(r"[^a-zA-Z0-9_-]", "_", uploaded_file.name.replace(".pdf", ""))
+        with st.spinner("Uploading to server..."):
+            files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
+            try:
+                response = requests.post(f"{API_BASE}/tenders/upload", files=files)
+                if response.status_code in [201, 202]:
+                    data = response.json()
+                    st.session_state.job_id = data["tender_id"]
+                    st.session_state.app_state = "PROCESSING"
+                    st.rerun()
+                else:
+                    st.error(f"Upload failed: {response.text}")
+            except Exception as e:
+                st.error(f"Could not connect to backend: {e}")
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-            tmp.write(uploaded_file.getvalue())
-            tmp_path = tmp.name
-
-        st.session_state.tender_id = tender_id
-        st.session_state.tmp_path = tmp_path
-        st.session_state.app_state = "PROCESSING"
-        st.rerun()
-
-# ── PROCESSING ───────────────────────────────────────────────────────────────
+# ── PROCESSING (The Polling Loop) ───────────────────────────────────────────
 elif st.session_state.app_state == "PROCESSING":
     st.title("TenderIQ")
-    st.write(f"Processing: {st.session_state.tender_id}")
 
-    with st.spinner("This may take up to 2 minutes..."):
-        try:
-            tmp_path = st.session_state.tmp_path
-            tender_id = st.session_state.tender_id
-
-            # conversion to markdown 
-            markdown_text = load_tender_pdf(tmp_path)
-
-            # split the markdown text into chunks for vectorization and storage
-            chunks = chunk_tender_documents(markdown_text)
-
-            # store the chunks in the vector store for retrieval
-            store_tender(chunks, tender_id)
-
-            # Preserve chunks and built chain across session reruns
-            st.session_state.chunks = chunks
-            st.session_state.rag_chain = build_rag_chain(tender_id, chunks)
-
-            if os.path.exists(tmp_path):
-                os.unlink(tmp_path)
-
-            st.session_state.app_state = "CHAT"
-            st.rerun()
-
-        except FileNotFoundError as e:
-            st.session_state.processing_error = f"Could not read the file: {str(e)}"
-            st.session_state.app_state = "UPLOAD"
-            st.rerun()
-        except Exception as e:
-            st.session_state.processing_error = f"Processing failed: {str(e)}"
-            st.session_state.app_state = "UPLOAD"
-            st.rerun()
+    with st.spinner("Working on it. This may take a moment..."):
+        job_id = st.session_state.job_id
+        is_done = False
+        
+        while not is_done:
+            try:
+                res = requests.get(f"{API_BASE}/tenders/{job_id}/specs")
+                
+                if res.status_code == 200:
+                    data = res.json()
+                    status = data.get("status", "")
+                    
+                    if status == "completed":
+                        specs = data.get("specs", {})
+                        # Grab the real Bid ID or fallback to job_id
+                        st.session_state.tender_id = specs.get("bid_id", job_id)
+                        is_done = True
+                    
+                    elif status.startswith("failed"):
+                        st.session_state.processing_error = f"Backend error: {status}"
+                        st.session_state.app_state = "UPLOAD"
+                        st.rerun()
+                    
+                    else:
+                        time.sleep(2)
+                else:
+                    st.session_state.processing_error = f"Backend returned error {res.status_code}"
+                    st.session_state.app_state = "UPLOAD"
+                    st.rerun()
+                    
+            except Exception as e:
+                st.session_state.processing_error = "Lost connection to backend during polling."
+                st.session_state.app_state = "UPLOAD"
+                st.rerun()
+        
+        st.session_state.app_state = "CHAT"
+        st.rerun()
 
 # ── CHAT ─────────────────────────────────────────────────────────────────────
 elif st.session_state.app_state == "CHAT":
@@ -92,10 +93,18 @@ elif st.session_state.app_state == "CHAT":
 
     st.divider()
 
-    # Render previous discussion thread
+    # Render previous discussion thread and citations
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
+            if "citations" in message and message["citations"]:
+                with st.expander("Sources / Citations"):
+                    for cite in message["citations"]:
+                        header = f"Page {cite.get('page_number', 'N/A')}"
+                        if cite.get('section'):
+                            header += f" | Section: {cite.get('section')}"
+                        st.markdown(f"**{header}**")
+                        st.caption(cite.get('snippet', ''))
 
     prompt = st.chat_input("Ask a question about this tender...")
 
@@ -107,8 +116,35 @@ elif st.session_state.app_state == "CHAT":
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 try:
-                    response = st.session_state.rag_chain.invoke(prompt)
-                    st.write(response)
-                    st.session_state.messages.append({"role": "assistant", "content": response})
+                    payload = {
+                        "tender_id": st.session_state.tender_id,
+                        "query": prompt
+                    }
+                    res = requests.post(f"{API_BASE}/chat/", json=payload)
+                    
+                    if res.status_code == 200:
+                        res_data = res.json()
+                        answer = res_data.get("answer", "")
+                        citations = res_data.get("citations", [])
+                        
+                        st.write(answer)
+                        
+                        if citations:
+                            with st.expander("Sources / Citations"):
+                                for cite in citations:
+                                    header = f"Page {cite.get('page_number', 'N/A')}"
+                                    if cite.get('section'):
+                                        header += f" | Section: {cite.get('section')}"
+                                    st.markdown(f"**{header}**")
+                                    st.caption(cite.get('snippet', ''))
+                        
+                        st.session_state.messages.append({
+                            "role": "assistant",
+                            "content": answer,
+                            "citations": citations
+                        })
+                    else:
+                        detail = res.json().get('detail', res.text)
+                        st.error(f"Error from server: {detail}")
                 except Exception as e:
                     st.error(f"Could not process your question: {str(e)}")
