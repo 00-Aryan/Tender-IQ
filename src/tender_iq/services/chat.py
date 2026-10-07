@@ -121,6 +121,7 @@ def process_chat_query(db: Session, tender_id: str, query: str) -> ChatResponse:
         raise TenderNotFoundError
     
     tender_specs = db_tender.specs
+    vector_tender_id = db_tender.bid_id or db_tender.id
 
     # 2. Fetch all chunks from ChromaDB
     stage_latencies_ms = {
@@ -132,7 +133,7 @@ def process_chat_query(db: Session, tender_id: str, query: str) -> ChatResponse:
     }
     chunk_load_start = time.perf_counter()
     try:
-        chunks = get_all_chunks_for_tender(tender_id)
+        chunks = get_all_chunks_for_tender(vector_tender_id)
     finally:
         stage_latencies_ms["chunk_loading_ms"] = round(
             (time.perf_counter() - chunk_load_start) * 1000, 2
@@ -146,7 +147,7 @@ def process_chat_query(db: Session, tender_id: str, query: str) -> ChatResponse:
 
     # 3. Build the RAG chain
     rag_chain = build_rag_chain(
-        tender_id=tender_id,
+        tender_id=vector_tender_id,
         chunk=chunks,
         tender_obj=tender_specs,
         stage_latencies_ms=stage_latencies_ms,
