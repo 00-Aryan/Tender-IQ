@@ -1,0 +1,32 @@
+{
+  "eval_dataset": [
+    {
+      "user_input": "What is the total estimated cost for the hiring of 6 Light Motor Vehicles (LMVs) under NK Area?",
+      "response": "The total estimated cost is Rs. 1,35,02,444.00 including GST, excluding the cost of Fuel/POL and CMPF/EPF of Driver and Helper.",
+      "retrieved_contexts": [
+        "The total estimated cost for 'Hiring of 06 Nos. LMV as detailed above' comes to Rs. 1,35,02,444.00 including GST but excluding cost of Fuel/POL and CMPF/EPF of Driver and Helper which are reimbursable"
+      ]
+    },
+    {
+      "user_input": "What are the average running hours and monthly km run required for the 2 shift-duty Bolero vehicles?",
+      "response": "The shift-duty Bolero vehicles require 16-24 hours of service per day, an average run of 2,500 km per month, and a contract period of 36 months.",
+      "retrieved_contexts": [
+        "(C) Hiring of 02 (Two) Nos. hard top covered jeep Diesel version (Bolero or equivalent) on daily hiring basis (16-24 hours service along with 02 nos. Driver) for a period of three years for its deployment in shift duty under different Project/Units of NK Area.\nSI. NO. Description Detail of work\n1 LMV (Bolero) As per directive of controlling officer\n2 Age of vehicle Not more than 03 years of age on the date of opening of tender from the date of 1st registration.\n3 Average KM Run per month 2500 km per month\n4 Mileage for reimbursement of fuel 12 km per litre\n5 Average Running hours per Day 16-24 hrs\n6 No. of months of Deployment in contract Period of the vehicle 36 months (03 Years)"
+      ]
+    },
+    {
+      "user_input": "What is the required EMD (Earnest Money Deposit) calculation formula specified in the tender terms?",
+      "response": "The Earnest Money / Bid Security is 1.25% of the annualized value of the estimated cost or the estimated cost whichever is less, rounded off to the next hundred rupees subject to a maximum of Rs 50 Lakhs.",
+      "retrieved_contexts": [
+        "Earnest Money/ Bid Security is 1.25 % of annualized value of estimated cost or estimated cost whichever is less, rounded off to next hundred rupees subject to maximum of Rs 50 Lakhs."
+      ]
+    },
+    {
+      "user_input": "What is the minimum working capital requirement for bidders participating in this tender?",
+      "response": "Bidders must possess adequate working capital of at least 20% of the annualized value or estimated value whichever is less, inclusive of access to lines of credit and other financial resources.",
+      "retrieved_contexts": [
+        "Evidence of possessing adequate working capital (at least 20% of the 'Annualized value or Estimated value whichever is less' of this work) inclusive of access to lines of credit and availability of other financial resources to meet the requirement."
+      ]
+    }
+  ]
+}

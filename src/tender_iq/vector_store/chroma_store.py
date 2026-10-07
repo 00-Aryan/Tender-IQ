@@ -1,3 +1,6 @@
+import logging
+import time
+
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
@@ -9,6 +12,7 @@ from langchain_classic.retrievers import EnsembleRetriever
 
 CHROMA_PATH = "data/chroma"
 COLLECTION_NAME = "tender_iq"
+logger = logging.getLogger(__name__)
 
 # Module level — just a placeholder, no model loaded yet
 _embed_model = None
@@ -68,8 +72,20 @@ def get_retriever(tender_id: str, k: int = 6):
         }
     )
 
-def get_ensemble_retriever(chunks: list, tender_id: str, k: int = 6):
-    bm25_retriever = BM25Retriever.from_documents(chunks)
+def get_ensemble_retriever(
+    chunks: list,
+    tender_id: str,
+    k: int = 6,
+    stage_latencies_ms: dict[str, float] | None = None,
+):
+    started_at = time.perf_counter()
+    try:
+        bm25_retriever = BM25Retriever.from_documents(chunks)
+    finally:
+        duration_ms = round((time.perf_counter() - started_at) * 1000, 2)
+        if stage_latencies_ms is not None:
+            stage_latencies_ms["bm25_build_ms"] = duration_ms
+        logger.info("Stage [BM25 Build / Indexing] completed in %.2f ms", duration_ms)
     bm25_retriever.k = k
 
     vector_retriever = get_retriever(tender_id=tender_id, k=k)

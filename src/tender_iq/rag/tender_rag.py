@@ -1,9 +1,14 @@
+import logging
+import time
+
 from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from tender_iq.vector_store.chroma_store import get_ensemble_retriever
 from tender_iq.prompts.rag_prompt import rag_prompt
 from tender_iq.config.llm_config import get_llm
 from tender_iq.rag.query_transformers import build_multi_query_retrieval_chain
+
+logger = logging.getLogger(__name__)
 
 def format_docs(retrieved_docs):
     formatted = []
@@ -27,12 +32,15 @@ def format_tender_metadata(tender_obj) -> str:
         return "No structured metadata available."
 
     def safe_value(obj, attr, default="N/A"):
-        value = getattr(obj, attr, default)
+        if isinstance(obj, dict):
+            value = obj.get(attr, default)
+        else:
+            value = getattr(obj, attr, default)
         return default if value is None else value
 
-    dates = getattr(tender_obj, 'dates', None)
-    financials = getattr(tender_obj, 'financials', None)
-    fleet = getattr(tender_obj, 'fleet', None)
+    dates = safe_value(tender_obj, "dates", None)
+    financials = safe_value(tender_obj, "financials", None)
+    fleet = safe_value(tender_obj, "fleet", None)
 
     lines = [
         f"- Bid ID: {safe_value(tender_obj, 'bid_id')}",
@@ -43,7 +51,7 @@ def format_tender_metadata(tender_obj) -> str:
         f"- Estimated Bid Value: {safe_value(financials, 'estimated_bid_value')}",
         f"- EMD Amount: {safe_value(financials, 'emd_amount')}",
         f"- Vehicle Type: {safe_value(fleet, 'vehicle_type')}",
-        f"- Quantity: {safe_value(fleet, 'quantity')}",
+        f"- Quantity: {safe_value(fleet, 'minimum_quantity')}",
         f"- Estimated Monthly KM: {safe_value(fleet, 'estimated_km_per_month')} KM",
     ]
     return "\n".join(lines)
@@ -51,26 +59,61 @@ def format_tender_metadata(tender_obj) -> str:
 
 
 
-def build_rag_chain(tender_id: str, chunk: list , tender_obj=None):
+def build_rag_chain(
+    tender_id: str,
+    chunk: list,
+    tender_obj=None,
+    stage_latencies_ms: dict[str, float] | None = None,
+):
+    timings = stage_latencies_ms if stage_latencies_ms is not None else {}
     
-    retriever = get_ensemble_retriever(tender_id=tender_id, chunks=chunk)
+    retriever = get_ensemble_retriever(
+        tender_id=tender_id,
+        chunks=chunk,
+        stage_latencies_ms=timings,
+    )
     llm = get_llm()
     parser = StrOutputParser()
 
-    retrieval_chain = build_multi_query_retrieval_chain(retriever, llm)
+    retrieval_chain = build_multi_query_retrieval_chain(retriever, llm, timings)
 
 
     # 1. Format metadata and partially bind to prompt upfront
     metadata_str = format_tender_metadata(tender_obj)
     configured_prompt = rag_prompt.partial(metadata_specs=metadata_str)
-
+    
     def answer_with_sources(question: str):
+        latency_breakdown_ms = dict(timings)
         retrieved_docs = retrieval_chain.invoke(question)
+        latency_breakdown_ms.update(timings)
         prompt_value = configured_prompt.invoke({
             "context": format_docs(retrieved_docs),
             "question": question,
         })
-        answer = parser.invoke(llm.invoke(prompt_value))
-        return {"answer": answer, "sources": retrieved_docs}
+        
+        # 1. Capture the raw AIMessage from the model
+        answer_started_at = time.perf_counter()
+        try:
+            raw_response = llm.invoke(prompt_value)
+        finally:
+            duration_ms = round((time.perf_counter() - answer_started_at) * 1000, 2)
+            latency_breakdown_ms["answer_generation_ms"] = duration_ms
+            timings["answer_generation_ms"] = duration_ms
+            logger.info("Stage [Answer Call] completed in %.2f ms", duration_ms)
+        
+        # 2. Parse text content
+        answer = parser.invoke(raw_response)
+        
+        # 3. Extract token usage metadata from Gemini/LangChain
+        tokens = 0
+        if hasattr(raw_response, "usage_metadata") and raw_response.usage_metadata:
+            tokens = raw_response.usage_metadata.get("total_tokens", 0)
+
+        return {
+            "answer": answer, 
+            "sources": retrieved_docs,
+            "tokens_used": tokens,
+            "latency_breakdown_ms": latency_breakdown_ms,
+        }
 
     return RunnableLambda(answer_with_sources)

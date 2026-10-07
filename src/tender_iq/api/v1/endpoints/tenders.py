@@ -55,9 +55,13 @@ def specification_tender(tender_id: str, db: Session = Depends(get_db)):
     db_tender = crud_tender.get_tender_by_id(db, tender_id)
     if not db_tender:
         raise HTTPException(status_code=404, detail="Job ID not found.")
+
+    public_status = db_tender.status
+    if public_status.startswith("failed"):
+        public_status = "failed"
     
     return TenderSpecs(
         tender_id=db_tender.id,         # This is the job_id
-        status=db_tender.status,        # processing, completed, or failed
+        status=public_status,           # processing, completed, or failed
         specs=db_tender.specs           # Empty if processing, filled if completed
     )

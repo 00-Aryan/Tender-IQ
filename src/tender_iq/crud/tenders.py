@@ -32,11 +32,11 @@ def update_parsed_tender(db: Session, tracking_id: str, real_bid_id: str, specs_
         db_tender.status = "completed"
         db.commit()
 
-def mark_tender_failed(db: Session, tracking_id: str, error_msg: str):
+def mark_tender_failed(db: Session, tracking_id: str):
     """Marks the tender as failed if PyMuPDF or Regex crashes."""
     db_tender = db.query(TenderRecord).filter(TenderRecord.id == tracking_id).first()
     if db_tender:
-        db_tender.status = f"failed: {error_msg}"
+        db_tender.status = "failed"
         db.commit()
 
 def get_tender_by_id(db: Session, tender_id: str) -> TenderRecord | None:

@@ -1,6 +1,11 @@
+import logging
+import time
+
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from tender_iq.prompts.query_expansion_prompt import query_expansion_prompt
+
+logger = logging.getLogger(__name__)
 
 def parse_queries(inputs: dict) -> list[str]:
     original_question = inputs["question"]
@@ -12,15 +17,32 @@ def parse_queries(inputs: dict) -> list[str]:
             queries.append(q_stripped)
     return queries
 
-def build_multi_query_retrieval_chain(retriever, llm):
+def build_multi_query_retrieval_chain(retriever, llm, stage_latencies_ms=None):
     parser = StrOutputParser()
+    timings = stage_latencies_ms if stage_latencies_ms is not None else {}
+    expansion_chain = query_expansion_prompt | llm | parser
+
+    def expand_query(inputs: dict):
+        started_at = time.perf_counter()
+        try:
+            return expansion_chain.invoke(inputs)
+        finally:
+            duration_ms = round((time.perf_counter() - started_at) * 1000, 2)
+            timings["query_expansion_ms"] = duration_ms
+            logger.info("Stage [Expansion Call] completed in %.2f ms", duration_ms)
 
     def retrieve_and_deduplicate(queries: list[str]):
         all_docs = []
         seen_content_hashes = set()
         
         # Use batch execution for parallel retrieval
-        batch_results = retriever.batch(queries)
+        started_at = time.perf_counter()
+        try:
+            batch_results = retriever.batch(queries)
+        finally:
+            duration_ms = round((time.perf_counter() - started_at) * 1000, 2)
+            timings["retrieval_ms"] = duration_ms
+            logger.info("Stage [Retrieval] completed in %.2f ms", duration_ms)
         
         for docs in batch_results:
             for doc in docs:
@@ -36,7 +58,7 @@ def build_multi_query_retrieval_chain(retriever, llm):
         {"question": RunnablePassthrough()}
         | RunnablePassthrough.assign(
             llm_output=(
-                query_expansion_prompt | llm | parser
+                RunnableLambda(expand_query)
             )
         )
         | RunnableLambda(parse_queries)

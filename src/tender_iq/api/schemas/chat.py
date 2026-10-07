@@ -1,7 +1,8 @@
 """
 Pydantic schemas for Chat requests and responses.
 """
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator 
+from typing import Optional
 
 class ChatRequest(BaseModel):
     tender_id: str = Field(
@@ -45,3 +46,6 @@ class ChatResponse(BaseModel):
         default_factory=list,
         description="List of cited document chunks supporting the answer."
     )
+    latency_ms: Optional[float] = None
+    latency_breakdown_ms: dict[str, float] = Field(default_factory=dict)
+    tokens_used: Optional[int] = None

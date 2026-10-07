@@ -30,6 +30,8 @@ dependencies = [
     "sqlalchemy>=2.0.51",
     "streamlit>=1.61.1",
     "torch>=2.13.0",
+    "ragas>=0.4.3",
+    "datasets>=5.1.0",
 ]
 
 [tool.setuptools.packages.find]

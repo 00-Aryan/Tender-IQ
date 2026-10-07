@@ -1,6 +1,8 @@
 """
 API Endpoints for Chat and RAG interactions.
 """
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -9,9 +11,14 @@ from tender_iq.api.schemas.chat import ChatRequest, ChatResponse
 # Import database session dependency
 from tender_iq.db.session import get_db
 # Import the chat service layer
-from tender_iq.services.chat import process_chat_query
+from tender_iq.services.chat import (
+    TenderDocumentsNotFoundError,
+    TenderNotFoundError,
+    process_chat_query,
+)
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 @router.post("/", response_model=ChatResponse, status_code=status.HTTP_200_OK)
 def chat_with_tender(
@@ -31,15 +38,22 @@ def chat_with_tender(
         )
         return response_data
         
-    except ValueError as e:
-        # Handle cases where the Tender ID or vectors don't exist
+    except TenderNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
+            detail="Requested tender not found."
+        ) from None
+    except TenderDocumentsNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Requested tender documents are not available."
+        ) from None
+    except Exception:
+        logger.exception(
+            "Unexpected error while processing chat request for tender_id=%s",
+            request.tender_id,
         )
-    except Exception as e:
-        # Handle unexpected LLM or ChromaDB failures safely
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred while generating the answer: {str(e)}"
-        )
+            detail="An internal error occurred while processing your request. Please try again."
+        ) from None

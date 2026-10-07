@@ -2,6 +2,7 @@
 Background service for asynchronous PDF ingestion.
 """
 import hashlib
+import logging
 import os
 from pathlib import Path
 
@@ -13,6 +14,8 @@ from tender_iq.extraction.extract_data import process_tender_pdf
 from tender_iq.document_processor.loader import load_tender_pdf
 from tender_iq.document_processor.chunker import chunk_tender_documents
 from tender_iq.vector_store.chroma_store import store_tender
+
+logger = logging.getLogger(__name__)
 
 def background_process_tender(file_path: Path, job_id: str):
     """
@@ -56,10 +59,10 @@ def background_process_tender(file_path: Path, job_id: str):
             specs_dict=specs_dict
         )
 
-    except Exception as e:
+    except Exception:
         # 7. If PyMuPDF or Regex crashes, tell SQLite so the frontend stops polling
-        print(f"Background Job {job_id} failed: {e}")
-        crud_tender.mark_tender_failed(db, job_id, str(e))
+        logger.exception("Background ingestion job %s failed", job_id)
+        crud_tender.mark_tender_failed(db, job_id)
         
     finally:
         # 8. Cleanup: Delete the PDF and close the DB connection

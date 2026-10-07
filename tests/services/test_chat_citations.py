@@ -4,6 +4,17 @@ from tender_iq.api.schemas.chat import CitationSource
 from tender_iq.services import chat
 
 
+def test_is_basic_greeting_keeps_exact_and_short_greetings():
+    assert chat._is_basic_greeting("  HELLO  ")
+    assert chat._is_basic_greeting("hey there!")
+
+
+def test_is_basic_greeting_does_not_intercept_compound_questions():
+    assert not chat._is_basic_greeting("hey what is the emd?")
+    assert not chat._is_basic_greeting("thanks what is the deadline?")
+    assert not chat._is_basic_greeting("hello tell me the eligibility criteria")
+
+
 def test_process_chat_query_cites_rag_sources(monkeypatch):
     stored_chunk = SimpleNamespace(
         metadata={"page_number": 1, "section": "Stored"},
@@ -38,3 +49,11 @@ def test_process_chat_query_cites_rag_sources(monkeypatch):
             snippet="Retrieved chunk...",
         )
     ]
+    assert set(response.latency_breakdown_ms) == {
+        "chunk_loading_ms",
+        "bm25_build_ms",
+        "query_expansion_ms",
+        "retrieval_ms",
+        "answer_generation_ms",
+    }
+    assert response.latency_breakdown_ms["chunk_loading_ms"] >= 0

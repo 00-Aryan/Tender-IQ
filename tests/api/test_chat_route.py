@@ -30,3 +30,35 @@ def test_chat_endpoint_valid_payload(monkeypatch):
     data = response.json()
     assert data["tender_id"] == "GEM-2026-101"
     assert "citations" in data
+
+
+def test_chat_endpoint_returns_safe_not_found_detail(monkeypatch):
+    def raise_tender_not_found(**kwargs):
+        raise chat_endpoint.TenderNotFoundError("internal tender lookup detail")
+
+    monkeypatch.setattr(chat_endpoint, "process_chat_query", raise_tender_not_found)
+
+    response = client.post(
+        "/api/v1/chat/",
+        json={"tender_id": "GEM-2026-101", "query": "What is the deadline?"},
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Requested tender not found."}
+
+
+def test_chat_endpoint_returns_generic_detail_for_unexpected_error(monkeypatch):
+    def raise_internal_error(**kwargs):
+        raise RuntimeError("database connection string")
+
+    monkeypatch.setattr(chat_endpoint, "process_chat_query", raise_internal_error)
+
+    response = client.post(
+        "/api/v1/chat/",
+        json={"tender_id": "GEM-2026-101", "query": "What is the deadline?"},
+    )
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "detail": "An internal error occurred while processing your request. Please try again."
+    }

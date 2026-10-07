@@ -1,8 +1,29 @@
+import logging
 import time
 import requests
 import streamlit as st
 
+logger = logging.getLogger(__name__)
+
 API_BASE = "http://127.0.0.1:8000/api/v1"
+LATENCY_STAGE_LABELS = {
+    "chunk_loading_ms": "Chunk Loading",
+    "bm25_build_ms": "BM25 Build",
+    "query_expansion_ms": "Query Expansion",
+    "retrieval_ms": "Retrieval",
+    "answer_generation_ms": "Answer Generation",
+}
+
+
+def render_latency_breakdown(latency_breakdown):
+    if not isinstance(latency_breakdown, dict) or not latency_breakdown:
+        return
+
+    with st.expander("⚡ Detailed Latency Breakdown"):
+        for key, label in LATENCY_STAGE_LABELS.items():
+            duration = latency_breakdown.get(key)
+            value = f"{duration:.2f} ms" if isinstance(duration, (int, float)) else "N/A"
+            st.markdown(f"- **{label}:** {value}")
 
 st.set_page_config(page_title="TenderIQ", layout="centered")
 
@@ -35,9 +56,11 @@ if st.session_state.app_state == "UPLOAD":
                     st.session_state.app_state = "PROCESSING"
                     st.rerun()
                 else:
-                    st.error(f"Upload failed: {response.text}")
-            except Exception as e:
-                st.error(f"Could not connect to backend: {e}")
+                    logger.warning("Tender upload failed with HTTP status %s", response.status_code)
+                    st.error("Upload failed. Please verify your file and try again.")
+            except Exception:
+                logger.exception("Could not connect to the backend during tender upload")
+                st.error("Could not connect to the service. Please try again.")
 
 # ── PROCESSING (The Polling Loop) ───────────────────────────────────────────
 elif st.session_state.app_state == "PROCESSING":
@@ -62,18 +85,20 @@ elif st.session_state.app_state == "PROCESSING":
                         is_done = True
                     
                     elif status.startswith("failed"):
-                        st.session_state.processing_error = f"Backend error: {status}"
+                        st.session_state.processing_error = "Tender processing failed. Please try another PDF."
                         st.session_state.app_state = "UPLOAD"
                         st.rerun()
                     
                     else:
                         time.sleep(2)
                 else:
-                    st.session_state.processing_error = f"Backend returned error {res.status_code}"
+                    logger.warning("Tender status request failed with HTTP status %s", res.status_code)
+                    st.session_state.processing_error = "Could not check tender processing status. Please try again."
                     st.session_state.app_state = "UPLOAD"
                     st.rerun()
                     
-            except Exception as e:
+            except Exception:
+                logger.exception("Could not check tender processing status")
                 st.session_state.processing_error = "Lost connection to backend during polling."
                 st.session_state.app_state = "UPLOAD"
                 st.rerun()
@@ -97,6 +122,12 @@ elif st.session_state.app_state == "CHAT":
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
+            
+            if message.get("latency_ms") is not None:
+                token_str = f" | 🪙 {message['tokens_used']} tokens" if message.get("tokens_used") else ""
+                st.caption(f"⚡ {message['latency_ms']} ms{token_str}")
+            render_latency_breakdown(message.get("latency_breakdown_ms"))
+
             if "citations" in message and message["citations"]:
                 with st.expander("Sources / Citations"):
                     for cite in message["citations"]:
@@ -126,25 +157,37 @@ elif st.session_state.app_state == "CHAT":
                         res_data = res.json()
                         answer = res_data.get("answer", "")
                         citations = res_data.get("citations", [])
+                        latency_ms = res_data.get("latency_ms")
+                        latency_breakdown_ms = res_data.get("latency_breakdown_ms", {})
+                        tokens_used = res_data.get("tokens_used")
                         
                         st.write(answer)
+
+                        if latency_ms is not None:
+                            token_str = f" | 🪙 {tokens_used} tokens" if tokens_used else ""
+                            st.caption(f"⚡ {latency_ms} ms{token_str}")
+                        render_latency_breakdown(latency_breakdown_ms)
                         
-                        if citations:
-                            with st.expander("Sources / Citations"):
-                                for cite in citations:
-                                    header = f"Page {cite.get('page_number', 'N/A')}"
-                                    if cite.get('section'):
-                                        header += f" | Section: {cite.get('section')}"
-                                    st.markdown(f"**{header}**")
-                                    st.caption(cite.get('snippet', ''))
+                        # if citations:
+                        #     with st.expander("Sources / Citations"):
+                        #         for cite in citations:
+                        #             header = f"Page {cite.get('page_number', 'N/A')}"
+                        #             if cite.get('section'):
+                        #                 header += f" | Section: {cite.get('section')}"
+                        #             st.markdown(f"**{header}**")
+                        #             st.caption(cite.get('snippet', ''))
                         
                         st.session_state.messages.append({
                             "role": "assistant",
                             "content": answer,
-                            "citations": citations
+                            "citations": citations,
+                            "latency_ms": latency_ms,
+                            "latency_breakdown_ms": latency_breakdown_ms,
+                            "tokens_used": tokens_used
                         })
                     else:
-                        detail = res.json().get('detail', res.text)
-                        st.error(f"Error from server: {detail}")
-                except Exception as e:
-                    st.error(f"Could not process your question: {str(e)}")
+                        logger.warning("Chat request failed with HTTP status %s", res.status_code)
+                        st.error("Could not process your question. Please try again.")
+                except Exception:
+                    logger.exception("Could not process chat request")
+                    st.error("Could not process your question. Please try again.")

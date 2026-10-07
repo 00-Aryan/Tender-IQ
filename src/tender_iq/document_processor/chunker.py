@@ -1,5 +1,3 @@
-import re
-
 from langchain_core.documents import Document
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
@@ -9,46 +7,23 @@ HEADERS_TO_SPLIT_ON = [
     ("###", "clause")
 ]
 
-PAGE_REGEX = re.compile(r"<!-- PAGE_(\d+) -->")
 
-
-def _split_document_by_page_markers(doc: Document) -> list[Document]:
-    matches = list(PAGE_REGEX.finditer(doc.page_content))
-    if not matches:
-        return [doc]
-
-    split_docs: list[Document] = []
-    current_page = doc.metadata.get("page_number", 1)
-    cursor = 0
-
-    for match in matches:
-        prefix = doc.page_content[cursor:match.start()]
-        if prefix.strip():
-            metadata = dict(doc.metadata)
-            metadata["page_number"] = current_page
-            split_docs.append(Document(page_content=prefix.strip(), metadata=metadata))
-
-        current_page = int(match.group(1))
-        cursor = match.end()
-
-    suffix = doc.page_content[cursor:]
-    if suffix.strip():
-        metadata = dict(doc.metadata)
-        metadata["page_number"] = current_page
-        split_docs.append(Document(page_content=suffix.strip(), metadata=metadata))
-
-    return split_docs
-
-
-def chunk_tender_documents(markdown_text: str) -> list:
-    if not markdown_text:
+def chunk_tender_documents(pages: list[Document]) -> list[Document]:
+    if not pages:
         return []
 
     markdown_splitter = MarkdownHeaderTextSplitter(
         headers_to_split_on=HEADERS_TO_SPLIT_ON,
         strip_headers=False,
     )
-    md_header_splits = markdown_splitter.split_text(markdown_text)
+    md_header_splits = [
+        Document(
+            page_content=split.page_content,
+            metadata={**page.metadata, **split.metadata},
+        )
+        for page in pages
+        for split in markdown_splitter.split_text(page.page_content)
+    ]
 
     chunk_size = 1200
     chunk_overlap = 100
@@ -58,10 +33,4 @@ def chunk_tender_documents(markdown_text: str) -> list:
         separators=["\n\n", "\n", " ", ""],
     )
 
-    splits = text_splitter.split_documents(md_header_splits)
-    page_split_documents: list[Document] = []
-
-    for doc in splits:
-        page_split_documents.extend(_split_document_by_page_markers(doc))
-
-    return page_split_documents
+    return text_splitter.split_documents(md_header_splits)

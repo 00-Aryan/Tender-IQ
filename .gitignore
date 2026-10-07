@@ -17,4 +17,3 @@ demo*
 # Local databases and vector stores
 *.db
 .chroma/
-tests

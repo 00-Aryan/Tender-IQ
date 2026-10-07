@@ -1,13 +1,14 @@
 import pymupdf4llm
+from langchain_core.documents import Document
 
 from tender_iq.document_processor.loader import load_tender_pdf
 
 
-def test_load_tender_pdf_inserts_page_markers(monkeypatch):
+def test_load_tender_pdf_returns_page_documents_with_one_indexed_metadata(monkeypatch):
     # Arrange
     fake_pages = [
         {"metadata": {"page_number": 1}, "text": "Page 1 content"},
-        {"metadata": {"page_number": 2}, "text": "Page 2 content"},
+        {"metadata": {}, "text": "Page 2 content"},
     ]
 
     def fake_to_markdown(doc, page_chunks):
@@ -21,7 +22,7 @@ def test_load_tender_pdf_inserts_page_markers(monkeypatch):
     result = load_tender_pdf("/tmp/sample.pdf")
 
     # Assert
-    assert "<!-- PAGE_1 -->" in result
-    assert "Page 1 content" in result
-    assert "<!-- PAGE_2 -->" in result
-    assert "Page 2 content" in result
+    assert result == [
+        Document(page_content="Page 1 content", metadata={"page_number": 1}),
+        Document(page_content="Page 2 content", metadata={"page_number": 2}),
+    ]

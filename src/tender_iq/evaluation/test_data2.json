@@ -1,0 +1,33 @@
+{
+  "eval_dataset": [
+    {
+      "user_input": "What is the total estimated value including GST for the utility van hiring tender at Tetariakhar OCP?",
+      "response": "The estimated value including GST is Rs. 30,14,786.42/-.",
+      "retrieved_contexts": [
+        "Estimated Value (Incl. GST) | 30,14,786.42/-"
+      ]
+    },
+    {
+      "user_input": "What is the exact EMD amount required for this Rajhara Area tender?",
+      "response": "The Earnest Money Deposit (EMD) required is Rs. 37,700.00/-.",
+      "retrieved_contexts": [
+        "EMD | 37,700.00/-"
+      ]
+    },
+    {
+      "user_input": "What are the vehicle specifications, driver count, and monthly running limit for the Tetariakhar OCP deployment?",
+      "response": "The requirement is for One (01) Diesel-Driven Utility Van (2179 CC or Above) with Two (02) Drivers for 24-Hour Operation with a monthly running limit of 2000 KMs.",
+      "retrieved_contexts": [
+        "Hiring of One (01) Diesel-Driven Utility Van (2179 CC or Above) with Two (02) Drivers for 24-Hour Operation under the E&M Department, Tetariakhar OCP, Rajhara Area (Monthly Running Limit: 2000 KMs)."
+      ]
+    },
+    {
+      "user_input": "Are work experience and working capital criteria applicable for bidders in this specific tender?",
+      "response": "No, both work experience and working capital requirements are explicitly noted as 'Not applicable'.",
+      "retrieved_contexts": [
+        "B. Work Experience: Not applicable.",
+        "C. Working Capital: Not applicable."
+      ]
+    }
+  ]
+}
