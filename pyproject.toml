@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tender-iq"
 version = "0.1.0"
-description = "Add your description here"
+description = "Answers questions about tender PDFs using document retrieval."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
