@@ -347,16 +347,5 @@ def main() -> None:
     except (RuntimeError, ValueError) as exc:
         raise SystemExit(str(exc)) from exc
 
-log_eval_run(
-    run_tag="v1.1-native-metadata",
-    tender_id="GEM/2026/B/7929904",
-    test_size=8,
-    faithfulness=0.61,       # From your RAGAS results
-    answer_relevancy=0.84,   # From your RAGAS results
-    context_precision=0.95,  # Updated score
-    avg_total_latency_ms=4200.0,
-    notes="Switched to object-level metadata propagation and fixed page mapping."
-)
-
 if __name__ == "__main__":
     main()
