@@ -60,7 +60,7 @@ def process_tender_pdf(pdf_path: str, max_pages: int = 6) -> TenderRequirements:
     tender_data = build_tender_requirements(regex_dict)
 
     if not validate_extraction_completeness(tender_data):
-        print(f"[FALLBACK NEEDED] Missing critical fields for {Path(pdf_path).name}. Routing to LLM...")
+        print(f"[FALLBACK NEEDED] Missing critical fields for {Path(pdf_path).name}. LLM fallback is not implemented.")
         # tender_data = parse_with_llm(raw_text, tender_data)
 
     return tender_data
