@@ -75,3 +75,9 @@ def test_job_id_chat_uses_bid_id_for_loading_and_retrieval(monkeypatch):
     assert requested_ids == ["GEM/2022/B/2684984", "GEM/2022/B/2684984"]
     assert response.tender_id == "JOB-1"
     assert response.answer == "25000"
+
+
+def test_greeting_prefix_keeps_short_and_unlisted_tender_questions():
+    for question in ("hello list required documents", "hi EMD?", "hello fees?", "thanks list documents"):
+        assert not chat._is_basic_greeting(question)
+    assert chat._is_basic_greeting("hello!")

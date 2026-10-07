@@ -6,7 +6,6 @@ import logging
 from sqlalchemy.orm import Session
 from langchain_core.documents import Document
 import time
-import re
 
 from tender_iq.db.session import SessionLocal
 from tender_iq.crud.tenders import get_tender_by_id
@@ -44,35 +43,8 @@ def _is_basic_greeting(query: str) -> bool:
         "good evening",
     }
 
-    if normalized in greeting_set:
-        return True
-
-    substantive_terms = {
-        "what",
-        "how",
-        "is",
-        "deadline",
-        "emd",
-        "tender",
-        "eligibility",
-        "criteria",
-        "can",
-        "tell",
-    }
-    words = re.findall(r"\b\w+\b", normalized)
-    for prefix in (
-        "hi ",
-        "hello ",
-        "hey ",
-        "greetings ",
-        "thanks ",
-        "thank you ",
-        "thankyou ",
-    ):
-        if normalized.startswith(prefix):
-            return len(words) <= 3 or not substantive_terms.intersection(words)
-
-    return False
+    greeting_set.add("hey there")
+    return normalized.rstrip("!.?") in greeting_set
 
 
 def get_all_chunks_for_tender(tender_id: str) -> list[Document]:
