@@ -38,9 +38,9 @@ def parse_with_regex(text: str) -> Dict[str, Any]:
 
     # 4. Estimated Bid Value
     val_match = re.search(
-        r"Estimated Bid Value[^\d\n]*\n(?:[^\d\n]*\n){0,3}\s*([\d,]+(?:\.\d+)?)",
+        r"^[ \t]*(?:/[ \t]*)?Estimated Bid Value(?:[ \t]+in INR)?(?:[ \t]*\(Inclusive of all[ \t\r\n]+taxes\))?[ \t]*:?[ \t]*\r?\n[ \t]*([\d,]+(?:\.\d+)?)[ \t]*$",
         text,
-        re.IGNORECASE
+        re.IGNORECASE | re.MULTILINE
     )
     if val_match:
         try:
