@@ -63,8 +63,10 @@ def parse_with_regex(text: str) -> Dict[str, Any]:
         extracted["bid_type"] = bid_type_match.group(1).strip()
 
     # 7. Vehicle Type needs to check edge case 
-    vehicle_match = re.search(r"Vehicle Type\s*\n\s*([^\n]+)", text)
-    if vehicle_match:
+    specification_parts = re.split(r"Technical\s+Specifications", text, maxsplit=1, flags=re.IGNORECASE)
+    specification_text = specification_parts[1] if len(specification_parts) == 2 else ""
+    vehicle_match = re.search(r"^[ \t]*Vehicle Type[ \t]*\r?\n[ \t]*([^\n]+)", specification_text, re.MULTILINE)
+    if vehicle_match and vehicle_match.group(1).strip() != "Regulatory/ Statutory Compliance of Service":
         extracted["vehicle_type"] = vehicle_match.group(1).strip()
 
     # 8. Estimated KM monthly (Target: 4200)

@@ -19,3 +19,18 @@ def test_estimated_value_does_not_use_disclaimer_or_footer(text):
 ])
 def test_estimated_value_reads_numeric_field(text):
     assert parse_with_regex(text)["estimated_bid_value"] == 1786241.52
+
+
+def test_vehicle_type_does_not_use_notice_text():
+    text = "Service Description includes Vehicle Type\n\nAs per the buyer requirements"
+    assert parse_with_regex(text)["vehicle_type"] is None
+
+
+def test_vehicle_type_reads_technical_specification():
+    text = "Technical Specifications\nSpecification\nValues\nVehicle Type\nPremium Sedan\nYear of Vehicle\n2024"
+    assert parse_with_regex(text)["vehicle_type"] == "Premium Sedan"
+
+
+def test_vehicle_type_does_not_use_wrapped_description_next_field():
+    text = "Technical Specifications\nCore\nDescription /Nomenclature of Service\nVehicle Hiring Multiclass\nVehicle Type\nRegulatory/ Statutory Compliance of Service\nYES"
+    assert parse_with_regex(text)["vehicle_type"] is None
