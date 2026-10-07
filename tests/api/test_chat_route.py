@@ -62,3 +62,25 @@ def test_chat_endpoint_returns_generic_detail_for_unexpected_error(monkeypatch):
     assert response.json() == {
         "detail": "An internal error occurred while processing your request. Please try again."
     }
+
+def test_chat_endpoint_rejects_whitespace_only_fields(monkeypatch):
+    def should_not_run(**kwargs):
+        raise AssertionError("Blank inputs reached the service")
+    monkeypatch.setattr(chat_endpoint, "process_chat_query", should_not_run)
+    for payload in (
+        {"tender_id": "BID-1", "query": "   "},
+        {"tender_id": "   ", "query": "What is the EMD?"},
+        {"tender_id": "BID-1", "query": " ? "},
+    ):
+        assert client.post("/api/v1/chat/", json=payload).status_code == 422
+
+
+def test_chat_endpoint_trims_valid_fields_before_service(monkeypatch):
+    received = []
+    def respond(db, tender_id, query):
+        received.append((tender_id, query))
+        return ChatResponse(tender_id=tender_id, answer="25000")
+    monkeypatch.setattr(chat_endpoint, "process_chat_query", respond)
+    response = client.post("/api/v1/chat/", json={"tender_id": " BID-1 ", "query": " What is the EMD? "})
+    assert response.status_code == 200
+    assert received == [("BID-1", "What is the EMD?")]

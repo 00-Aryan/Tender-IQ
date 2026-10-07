@@ -7,6 +7,7 @@ from typing import Optional
 class ChatRequest(BaseModel):
     tender_id: str = Field(
         ..., 
+        min_length=1,
         description="The unique identifier of the tender (GeM Bid ID or Job ID)."
     )
     query: str = Field(
@@ -17,7 +18,7 @@ class ChatRequest(BaseModel):
         json_schema_extra={"example": "What is the EMD amount and submission deadline?"}
     )
 
-    @field_validator("tender_id", "query")
+    @field_validator("tender_id", "query", mode="before")
     @classmethod
     def strip_whitespace(cls, v: str) -> str:
         """Strips accidental leading/trailing whitespace from text inputs."""
