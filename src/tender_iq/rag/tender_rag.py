@@ -1,3 +1,5 @@
+import hashlib
+import json
 import logging
 import time
 
@@ -64,6 +66,7 @@ def build_rag_chain(
     chunk: list,
     tender_obj=None,
     stage_latencies_ms: dict[str, float] | None = None,
+    capture_evidence: bool = False,
 ):
     timings = stage_latencies_ms if stage_latencies_ms is not None else {}
     
@@ -84,17 +87,48 @@ def build_rag_chain(
     
     def answer_with_sources(question: str):
         latency_breakdown_ms = dict(timings)
-        retrieved_docs = retrieval_chain.invoke(question)
+        retrieved_docs = retrieval_chain.invoke(question) #obtains document
         latency_breakdown_ms.update(timings)
-        prompt_value = configured_prompt.invoke({
-            "context": format_docs(retrieved_docs),
+        prompt_value = configured_prompt.invoke({  #combines that text, structured metadata and the question.
+            "context": format_docs(retrieved_docs), #formats their text
             "question": question,
         })
-        
+
+        if capture_evidence:
+            # Snapshot the actual model input before generation, without truncating evidence.
+            evidence_chunks = []
+            for position, doc in enumerate(retrieved_docs, start=1):
+                metadata = doc.model_dump(mode="json")["metadata"]
+                stored_id = doc.id or metadata.get("chunk_id")
+                identity = json.dumps(
+                    {"tender_id": tender_id, "text": doc.page_content, "metadata": metadata},
+                    sort_keys=True,
+                    ensure_ascii=False,
+                )
+                evidence_chunks.append({
+                    "chunk_id": str(stored_id) if stored_id is not None else hashlib.sha256(identity.encode("utf-8")).hexdigest(),
+                    "id_source": "stored" if stored_id is not None else "derived_sha256",
+                    "position": position,
+                    "text": doc.page_content,
+                    "metadata": metadata,
+                })
+            evaluation_evidence = {
+                "retrieved_chunks": evidence_chunks,
+                "retrieval_order": "Multi-query results combined in query order and deduplicated; no global reranking.",
+                "structured_overview": metadata_str,
+                "prompt_messages": [
+                    {
+                        "role": {"human": "user", "ai": "assistant"}.get(message.type, message.type),
+                        "content": message.model_dump(mode="json")["content"],
+                    }
+                    for message in prompt_value.to_messages()
+                ],
+            }
+
         # 1. Capture the raw AIMessage from the model
         answer_started_at = time.perf_counter()
         try:
-            raw_response = llm.invoke(prompt_value)
+            raw_response = llm.invoke(prompt_value) #sends the completed prompt to the model.
         finally:
             duration_ms = round((time.perf_counter() - answer_started_at) * 1000, 2)
             latency_breakdown_ms["answer_generation_ms"] = duration_ms
@@ -109,11 +143,14 @@ def build_rag_chain(
         if hasattr(raw_response, "usage_metadata") and raw_response.usage_metadata:
             tokens = raw_response.usage_metadata.get("total_tokens", 0)
 
-        return {
+        result = {
             "answer": answer, 
             "sources": retrieved_docs,
             "tokens_used": tokens,
             "latency_breakdown_ms": latency_breakdown_ms,
         }
+        if capture_evidence:
+            result["evaluation_evidence"] = evaluation_evidence
+        return result
 
     return RunnableLambda(answer_with_sources)

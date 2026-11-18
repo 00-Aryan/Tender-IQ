@@ -4,6 +4,8 @@ from tender_iq.rag import tender_rag
 from langchain_core.documents import Document
 from langchain_core.runnables import RunnableLambda
 from tender_iq.rag.query_transformers import build_multi_query_retrieval_chain
+import json
+from langchain_core.messages import AIMessage
 
 
 class DummyDates:
@@ -196,4 +198,77 @@ def test_multi_query_chain_records_expansion_and_retrieval_latencies():
     assert result == [document]
     assert stage_latencies_ms["query_expansion_ms"] >= 0
     assert stage_latencies_ms["retrieval_ms"] >= 0
+
+
+def test_chain_captures_full_model_evidence_without_extra_calls(monkeypatch):
+    documents = [
+        Document(id="stored-1", page_content="First evidence " * 100, metadata={"page_number": 2}),
+        Document(page_content="Second evidence", metadata={"page_number": 3}),
+    ]
+    prompts = []
+
+    class FakeModel:
+        def invoke(self, prompt):
+            prompts.append(prompt)
+            return AIMessage(content="Test answer")
+
+    monkeypatch.setattr(tender_rag, "get_llm", lambda: FakeModel())
+    monkeypatch.setattr(tender_rag, "get_ensemble_retriever", lambda **kwargs: object())
+    monkeypatch.setattr(
+        tender_rag, "build_multi_query_retrieval_chain",
+        lambda *args: RunnableLambda(lambda question: documents),
+    )
+    chain = tender_rag.build_rag_chain(
+        "BID-1", documents, {"bid_id": "BID-1"}, capture_evidence=True,
+    )
+    result = chain.invoke("Question?")
+    evidence = result["evaluation_evidence"]
+    assert len(prompts) == 1
+    assert result["answer"] == "Test answer"
+    assert result["sources"] == documents
+    assert [chunk["text"] for chunk in evidence["retrieved_chunks"]] == [doc.page_content for doc in documents]
+    assert [chunk["position"] for chunk in evidence["retrieved_chunks"]] == [1, 2]
+    assert evidence["retrieved_chunks"][0]["chunk_id"] == "stored-1"
+    assert evidence["retrieved_chunks"][0]["id_source"] == "stored"
+    derived = evidence["retrieved_chunks"][1]
+    assert derived["id_source"] == "derived_sha256"
+    assert derived["metadata"] == documents[1].metadata
+    assert evidence["structured_overview"] == tender_rag.format_tender_metadata({"bid_id": "BID-1"})
+    assert [message["content"] for message in evidence["prompt_messages"]] == [message.content for message in prompts[0].to_messages()]
+    assert [message["role"] for message in evidence["prompt_messages"]] == ["system", "user"]
+    assert evidence["structured_overview"] in evidence["prompt_messages"][1]["content"]
+    json.dumps(evidence)
+    # Derived identity is stable across calls, not based on list position.
+    documents.reverse()
+    repeated = chain.invoke("Question?")["evaluation_evidence"]
+    assert repeated["retrieved_chunks"][0]["chunk_id"] == derived["chunk_id"]
+
+
+def test_chain_skips_evidence_work_by_default(monkeypatch):
+    document = Document(page_content="Required evidence", metadata={"page_number": 1})
+    prompts = []
+
+    def unexpected_serialization(*args, **kwargs):
+        raise AssertionError("Default chat must not serialize evaluation evidence")
+
+    class FakeModel:
+        def invoke(self, prompt):
+            prompts.append(prompt)
+            return AIMessage(content="Test answer")
+
+    monkeypatch.setattr(Document, "model_dump", unexpected_serialization)
+    monkeypatch.setattr(tender_rag, "get_llm", lambda: FakeModel())
+    monkeypatch.setattr(tender_rag, "get_ensemble_retriever", lambda **kwargs: object())
+    monkeypatch.setattr(
+        tender_rag, "build_multi_query_retrieval_chain",
+        lambda *args: RunnableLambda(lambda question: [document]),
+    )
+    chain = tender_rag.build_rag_chain("BID-1", [document])
+    result = chain.invoke("Question?")
+
+    assert "evaluation_evidence" not in result
+    assert result["answer"] == "Test answer"
+    assert result["sources"] == [document]
+    assert len(prompts) == 1
+    assert document.page_content in prompts[0].to_messages()[1].content
     

@@ -55,13 +55,20 @@ def build_multi_query_retrieval_chain(retriever, llm, stage_latencies_ms=None):
         return all_docs
 
     retrieval_chain = (
+        # 1. Standardize input into a dict
         {"question": RunnablePassthrough()}
+
+        # 2. Augment the dict by running expansion without losing the original question
         | RunnablePassthrough.assign(
             llm_output=(
                 RunnableLambda(expand_query)
             )
         )
+
+        # 3. Transform dict {"question": ..., "llm_output": ...} into list[str]
         | RunnableLambda(parse_queries)
+
+        # 4. Turn list[str] into list[Document]
         | RunnableLambda(retrieve_and_deduplicate)
     )
     
