@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from langchain_core.documents import Document
 import time
 
-from tender_iq.db.session import SessionLocal
 from tender_iq.crud.tenders import get_tender_by_id
 from tender_iq.vector_store.chroma_store import get_vector_store
 from tender_iq.rag.tender_rag import build_rag_chain

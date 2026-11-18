@@ -53,26 +53,3 @@ def get_tender_by_id(db: Session, tender_id: str) -> TenderRecord | None:
     return db.query(TenderRecord).filter(
         or_(TenderRecord.id == tender_id, TenderRecord.bid_id == tender_id)
     ).first()
-
-def create_mock_tender(db: Session, tender_id: str, specs_dict: dict) -> TenderRecord:
-    """
-    Insert a new tender record into the database with initial mock or extracted data.
-
-    Args:
-        db (Session): The active database session.
-        tender_id (str): The generated unique identifier for the tender.
-        specs_dict (dict): The extracted tender requirements as a dictionary.
-
-    Returns:
-        TenderRecord: The newly created and committed database record.
-    """
-    db_tender = TenderRecord(
-        id=tender_id,
-        bid_id=specs_dict.get("bid_id", "UNKNOWN"),
-        status="completed",
-        specs=specs_dict
-    )
-    db.add(db_tender)
-    db.commit()
-    db.refresh(db_tender)
-    return db_tender

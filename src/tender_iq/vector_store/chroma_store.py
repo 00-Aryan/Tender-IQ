@@ -55,13 +55,7 @@ def store_tender(chunks: list[Document], tender_id: str) -> int:
 def get_retriever(tender_id: str, k: int = 6):
     vector_store = get_vector_store() 
 
-    # Option A: Pure similarity search 
-    # return vector_store.as_retriever(
-    #     search_type="similarity",
-    #     search_kwargs={"k": k, "filter": {"tender_id": tender_id}}
-    # )
-
-    # Option B: High-relevance MMR 
+    # Current strategy: MMR. Similarity-only search is a documented future experiment.
     return vector_store.as_retriever(
         search_type="mmr",
         search_kwargs={

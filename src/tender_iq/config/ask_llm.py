@@ -1,3 +1,5 @@
+"""Standalone provider-demo helper; API and RAGAS scoring configure their models separately."""
+
 from .llm_config import get_llm, PROVIDER_CONFIGS
 
 

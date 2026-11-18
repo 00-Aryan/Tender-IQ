@@ -1,7 +1,7 @@
-from pydantic import BaseModel, Field , HttpUrl, EmailStr ,model_validator
+"""Future bidder-profile schema; no current API route or eligibility matcher uses it."""
+
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
-from enum import Enum
-from datetime import date
 
 
 
