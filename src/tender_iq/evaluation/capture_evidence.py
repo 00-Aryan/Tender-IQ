@@ -6,8 +6,10 @@ paid model APIs. Importing the module does not load models or send requests.
 """
 
 import argparse  # Read options such as question IDs and upload mappings.
+import hashlib  # Hash code, dataset and dependency lock files for provenance.
 import json  # Read datasets and write portable result records.
 import math  # Reject infinite or invalid pause durations.
+import subprocess  # Read Git revision and branch information.
 import time  # Measure durations with a monotonic clock.
 from datetime import datetime  # Record human-readable run dates.
 from pathlib import Path  # Build paths independently of shell separators.
@@ -22,6 +24,78 @@ TIMEZONE = ZoneInfo("Asia/Kolkata")  # Include the India-time offset in saved ti
 def timestamp():
     """Input: none. Output: current ISO timestamp, for run/case traceability."""
     return datetime.now(TIMEZONE).isoformat()  # Include date, time and UTC offset.
+
+
+def get_git_provenance():
+    """Input: none. Output: git commit SHA and branch name or fallback dictionary."""
+    try:
+        commit_sha = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=PROJECT_ROOT, stderr=subprocess.DEVNULL, text=True
+        ).strip()
+        branch = subprocess.check_output(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=PROJECT_ROOT, stderr=subprocess.DEVNULL, text=True
+        ).strip()
+        return {"commit_sha": commit_sha, "branch": branch}
+    except Exception:
+        return {"commit_sha": "unknown", "branch": "unknown"}
+
+
+def get_environment_provenance(mapping, dataset_path=DATASET):
+    """Input: upload mapping and dataset path. Output: comprehensive provenance dict.
+
+    Records git commit, branch, dataset/document hashes, capture script hash, uv.lock hash,
+    models, retrieval settings, and upload mappings without sensitive credentials.
+    """
+    git_info = get_git_provenance()
+    uv_lock_path = PROJECT_ROOT / "uv.lock"
+    uv_lock_sha = hashlib.sha256(uv_lock_path.read_bytes()).hexdigest() if uv_lock_path.exists() else None
+    script_sha = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+
+    dataset_raw = dataset_path.read_bytes()
+    dataset_data = json.loads(dataset_raw)
+    dataset_sha = hashlib.sha256(dataset_raw).hexdigest()
+
+    return {
+        "git": git_info,
+        "dataset": {
+            "path": str(dataset_path.resolve()),
+            "version": dataset_data["dataset_version"],
+            "sha256": dataset_sha,
+        },
+        "documents": {
+            tender_id: {
+                "pdf_path": doc["pdf_path"],
+                "sha256": doc["sha256"],
+            }
+            for tender_id, doc in dataset_data.get("documents", {}).items()
+        },
+        "capture_script_sha256": script_sha,
+        "uv_lock_sha256": uv_lock_sha,
+        "timezone": str(TIMEZONE),
+        "upload_mappings": mapping,
+        "models": {
+            "generation": {
+                "model": "gemini-3.1-flash-lite",
+                "provider": "google_genai",
+                "temperature": 0.0,
+            },
+            "embeddings": {
+                "model": "all-MiniLM-L6-v2",
+                "provider": "huggingface",
+            },
+        },
+        "retrieval_settings": {
+            "search_type": "mmr",
+            "k": 6,
+            "fetch_k": 20,
+            "lambda_mult": 0.85,
+            "ensemble_weights": [0.4, 0.6],  # [BM25, Vector]
+            "query_expansion": {
+                "enabled": True,
+                "method": "llm_multi_query",
+            },
+        },
+    }
 
 
 def load_cases(dataset_path=DATASET, question_ids=None):
@@ -193,12 +267,15 @@ def capture_batch(selected, mapping, pause=2.0, max_consecutive_provider_failure
     """
     if type(max_consecutive_provider_failures) is not int or max_consecutive_provider_failures < 1:  # Require a usable stop threshold.
         raise ValueError("Provider failure limit must be a positive integer.")
+    dataset_path = Path(selected[0]["dataset_path"]) if selected and "dataset_path" in selected[0] else DATASET
+    provenance = get_environment_provenance(mapping, dataset_path=dataset_path)
     report = {  # Store run-level scope so results cannot be mistaken for HTTP evaluation.
         "run_id": datetime.now(TIMEZONE).strftime("%Y-%m-%d_%H-%M-%S-%f"),  # Readable unique filename component.
         "schema_version": 1,  # Match the consolidated capture format.
         "dataset_version": selected[0]["dataset_version"],  # Identify the question version.
         "dataset_sha256": selected[0]["dataset_sha256"],  # Pin the exact reference bytes.
         "started_at": timestamp(),  # Record the run's wall-clock start.
+        "provenance": provenance,  # Full reproducible configuration without secrets.
         "execution_path": "Direct RAG chain; bypasses API validation, routing and response formatting.",  # State bypassed layers.
         "identity_limit": "Tender ID checked; indexed PDF bytes/version not independently verified.",  # Avoid overstating isolation.
         "timing_scope": "Local lookup, chunk loading, chain construction and invocation; not HTTP latency.",  # Define the clock boundary.

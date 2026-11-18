@@ -351,3 +351,70 @@ def test_score_retrieval_hash_mismatch(collection, tmp_path):
     with pytest.raises(ValueError, match="dataset hash mismatch"):
         ev.score_retrieval(capture_path, dataset_path, labels_path)
 
+
+def test_capture_records_traceable_provenance_and_no_secrets(collection, monkeypatch):
+    from tender_iq.evaluation import capture_evidence as cap
+
+    root, _, _, item = collection
+    dataset_path = root / "dataset.json"
+    monkeypatch.setattr(cap, "RESULTS_DIR", root / "captures")
+    monkeypatch.setattr(cap, "capture_case", lambda *args, **kwargs: copy.deepcopy(item["record"]["result"]))
+
+    mapping = {"BID-1": "JOB-1"}
+    report = cap.capture_batch(cap.load_cases(dataset_path), mapping, pause=0)
+
+    # 1. Capture includes git revision and configuration fields
+    assert "provenance" in report
+    prov = report["provenance"]
+    assert "git" in prov and "commit_sha" in prov["git"] and "branch" in prov["git"]
+    assert prov["models"]["generation"]["model"] == "gemini-3.1-flash-lite"
+    assert prov["models"]["embeddings"]["model"] == "all-MiniLM-L6-v2"
+    assert prov["retrieval_settings"]["search_type"] == "mmr"
+    assert prov["retrieval_settings"]["ensemble_weights"] == [0.4, 0.6]
+    assert prov["upload_mappings"] == mapping
+    assert "BID-1" in prov["documents"]
+
+    # 2. Sensitive environment values / API keys are not written into report
+    serialized = json.dumps(report)
+    for forbidden in ["API_KEY", "SECRET", "PASSWORD", "TOKEN", "Bearer", "AIzaSy"]:
+        assert forbidden not in serialized
+
+
+def test_score_report_records_exact_capture(collection, tmp_path):
+    root, capture_path, _, _ = collection
+    dataset_path = root / "dataset.json"
+
+    capture = json.loads(capture_path.read_text())
+    chunks = [
+        {"chunk_id": f"chunk-{i}", "position": i, "text": f"Text {i}", "metadata": {}}
+        for i in range(1, 6)
+    ]
+    capture["results"][0]["result"]["evaluation_evidence"]["retrieved_chunks"] = chunks
+    capture_hash = write_json(capture_path, capture)
+
+    dataset = json.loads(dataset_path.read_text())
+    dataset_hash = hashlib.sha256(dataset_path.read_bytes()).hexdigest()
+
+    labels_data = {
+        "schema_version": 1,
+        "dataset_sha256": dataset_hash,
+        "capture_sha256": capture_hash,
+        "metric": "precision_at_5_saved_union_order",
+        "k": 5,
+        "included_cases": ["CASE-1"],
+        "excluded_cases": {},
+        "labels": {
+            "CASE-1": [{"position": i, "chunk_id": f"chunk-{i}", "relevant": True, "reason": "ok"} for i in range(1, 6)]
+        }
+    }
+    labels_path = tmp_path / "labels.json"
+    write_json(labels_path, labels_data)
+
+    out_dir = tmp_path / "scores"
+    report = ev.score_retrieval(capture_path, dataset_path, labels_path, output_dir=out_dir)
+
+    assert report["inputs"]["capture_sha256"] == capture_hash
+    assert report["inputs"]["capture_path"] == str(capture_path.resolve())
+    assert report["inputs"]["dataset_sha256"] == dataset_hash
+
+
