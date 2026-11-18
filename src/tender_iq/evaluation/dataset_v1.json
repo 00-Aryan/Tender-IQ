@@ -1,0 +1,724 @@
+{
+  "schema_version": 1,
+  "dataset_version": "v1",
+  "documents": {
+    "GEM/2026/B/8085250": {
+      "pdf_path": "docs/pdfs/GeM-Bidding-9948536.pdf",
+      "sha256": "0bb5ff51ed613d583f181b403020642dc00ab00146e5191936ba677eb37c9655"
+    },
+    "GEM/2026/B/8104613": {
+      "pdf_path": "docs/pdfs/GeM-Bidding-9970689.pdf",
+      "sha256": "d5fd305db78fd3576519212458aec4cd8658938db5a03e956b649b68192507dc"
+    }
+  },
+  "cases": [
+    {
+      "id": "T1-NEW-001",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What EMD amount is stated for this bid?",
+      "expected_answer": "INR 56300.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "EMD Detail - EMD Amount"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-002",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What is the bid submission deadline, including the time?",
+      "expected_answer": "10-10-2026 18:00:00.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Bid End Date/Time"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-003",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "When will the bid open, including the time?",
+      "expected_answer": "11-10-2026 18:00:00.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Bid Opening Date/Time"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-004",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What is the estimated bid value, including all taxes?",
+      "expected_answer": "INR 13502444, inclusive of all taxes.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "Bid Details - Estimated Bid Value"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-005",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What contract period is shown in Bid Details?",
+      "expected_answer": "3 years.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Contract Period"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-006",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "Does this PDF permit a buyer clause demanding a tender fee or bid participation fee?",
+      "expected_answer": "Not permitted. Such a clause makes the bid and resulting contract null and void.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 10,
+          "section": "Disclaimer - item 11"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-007",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "How many years of past experience in the same or similar service are required?",
+      "expected_answer": "7 years.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Years of Past Experience"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-008",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "Which document categories are listed under Document required from seller?",
+      "expected_answer": "Experience Criteria and Certificate (Requested in ATC).",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Document required from seller"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-009",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "Does the MSE relaxation field grant relaxation for years of experience and turnover?",
+      "expected_answer": "No relaxation for years of experience and turnover is granted to MSEs in this field.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - MSE Relaxation"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-010",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What conditions must a DPIIT-registered startup meet to claim relaxation from the experience criteria?",
+      "expected_answer": "It must meet the quality and technical specifications and upload supporting documents proving eligibility for relaxation.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 3,
+          "section": "DPIIT registered Startup - clause 1"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-011",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What completed-service value thresholds qualify under Past Experience of Similar Services?",
+      "expected_answer": "Three services each at least 40%, two each at least 50%, or one at least 80% of estimated cost.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 3,
+          "section": "Past Experience of Similar Services - clause 4"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-012",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What daily engagement hours are listed for the Scorpio or equivalent vehicle?",
+      "expected_answer": "8-12 hours per day.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 4,
+          "section": "Technical Specifications - Engagement Hours per Day"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-013",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What monthly kilometres are listed in the consignee table for the single Scorpio or equivalent vehicle?",
+      "expected_answer": "2250 km per month.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 5,
+          "section": "Consignees/Reporting Officer and Quantity - Scorpio"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-014",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What monthly kilometres does this PDF list for the three-vehicle Bolero group?",
+      "expected_answer": "1995 km per month.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 7,
+          "section": "Consignees/Reporting Officer and Quantity - 3 Boleros"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-015",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What monthly kilometres and deployment duration are listed for the two-vehicle Bolero group?",
+      "expected_answer": "2500 km per month and 36 months of deployment.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 8,
+          "section": "Consignees/Reporting Officer and Quantity - 2 Boleros"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-016",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "Across all three consignee tables, how many vehicles are required and what is the group split?",
+      "expected_answer": "6 vehicles: 1 Scorpio or equivalent, 3 Boleros in the second group, and 2 Boleros in the third group.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 5,
+          "section": "Consignees/Reporting Officer and Quantity - Scorpio"
+        },
+        {
+          "page": 7,
+          "section": "Consignees/Reporting Officer and Quantity - 3 Boleros"
+        },
+        {
+          "page": 8,
+          "section": "Consignees/Reporting Officer and Quantity - 2 Boleros"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-017",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "Does the No entry for MSE experience and turnover relaxation rule out an MSE service provider claiming EMD exemption?",
+      "expected_answer": "No. The relaxation field says No, but an MSE service provider may seek EMD exemption with valid category documents; traders are excluded.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - MSE Relaxation"
+        },
+        {
+          "page": 3,
+          "section": "EMD EXEMPTION"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-018",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "Who pays the diesel running cost first, how is it reimbursed, and what standard bill-payment timeline is stated?",
+      "expected_answer": "The contractor pays first. CCL reimburses diesel with the monthly bill. Payment is within 21 days of the service acceptance certificate and online bill submission.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 9,
+          "section": "Buyer Added text based ATC - diesel running cost"
+        },
+        {
+          "page": 2,
+          "section": "Payment Timelines"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-019",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What do the ePBG field and buyer-added ATC separately say about performance security?",
+      "expected_answer": "ePBG Required says No. The ATC says performance security and additional performance security, as applicable, must be deposited as per the award of work.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "ePBG Detail - Required"
+        },
+        {
+          "page": 9,
+          "section": "Buyer Added text based ATC - performance security"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-020",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "Which company has already been selected as the winning bidder?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details"
+        },
+        {
+          "page": 10,
+          "section": "Disclaimer"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-021",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What exact minimum annual turnover amount in rupees is specified in this PDF?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - MSE Relaxation"
+        },
+        {
+          "page": 3,
+          "section": "Past Experience of Similar Services"
+        },
+        {
+          "page": 4,
+          "section": "Additional Qualification/Data Required"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-022",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What are the winning bidder bank account number and IFSC for receiving contract payments?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "Payment Timelines"
+        },
+        {
+          "page": 3,
+          "section": "Beneficiary"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-023",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What is the registration number of the actual Scorpio selected for deployment?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 4,
+          "section": "Technical Specifications - Year of Vehicle Model"
+        }
+      ]
+    },
+    {
+      "id": "T1-NEW-024",
+      "tender_id": "GEM/2026/B/8085250",
+      "question": "What rupee-per-kilometre rate did the lowest-priced bidder actually quote?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "Financial Document Indicating Price Breakup Required"
+        },
+        {
+          "page": 5,
+          "section": "Minimum Floor Price defined by Buyer"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-001",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What EMD amount is stated for this bid?",
+      "expected_answer": "INR 37700.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "EMD Detail - EMD Amount"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-002",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What is the bid submission deadline, including the time?",
+      "expected_answer": "10-10-2026 19:00:00.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Bid End Date/Time"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-003",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "When will the bid open, including the time?",
+      "expected_answer": "11-10-2026 19:00:00.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Bid Opening Date/Time"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-004",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What is the estimated bid value, including all taxes?",
+      "expected_answer": "INR 3014786.42, inclusive of all taxes.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "Bid Details - Estimated Bid Value"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-005",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What contract period is shown in Bid Details?",
+      "expected_answer": "3 years and 1 day.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Contract Period"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-006",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "Does this PDF permit a buyer clause demanding a tender fee or bid participation fee?",
+      "expected_answer": "Not permitted. Such a clause makes the bid and resulting contract null and void.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 6,
+          "section": "Disclaimer - introduction"
+        },
+        {
+          "page": 7,
+          "section": "Disclaimer - item 11"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-007",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "Do the MSE or startup fields grant relaxation for years of experience and turnover?",
+      "expected_answer": "No relaxation is granted in either field.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - MSE and Startup Relaxation"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-008",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What is listed under Document required from seller?",
+      "expected_answer": "Certificate (Requested in ATC).",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Document required from seller"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-009",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "Who can claim MSE purchase preference for this service bid, and what must be uploaded?",
+      "expected_answer": "The bidder must be the service provider and upload relevant documentary evidence with the bid. Traders are excluded.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 5,
+          "section": "Purchase Preference (Centre) - MSE"
+        },
+        {
+          "page": 6,
+          "section": "Purchase Preference (Centre) - MSE continuation"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-010",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What minimum local-content percentage qualifies a Class-I local supplier, and what certificate is requested for purchase preference?",
+      "expected_answer": "50% local content. An OEM certificate must state the percentage of local content and the locations of local value addition.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 6,
+          "section": "Purchase Preference (Centre) - Make In India"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-011",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What happens if a bidder fails to upload certificates or documents requested in the bid, ATC or corrigendum?",
+      "expected_answer": "The offer is liable to rejection.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 6,
+          "section": "Certificates - clause 5"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-012",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What ePBG percentage and required duration are listed?",
+      "expected_answer": "5% and 39 months.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "ePBG Detail"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-013",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "How many vehicles and monthly kilometres are listed in the consignee table?",
+      "expected_answer": "1 vehicle and 2000 km per month.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 5,
+          "section": "Consignees/Reporting Officer and Quantity"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-014",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What minimum engine capacity and driver count are specified for the utility van?",
+      "expected_answer": "2179 CC or above, with 2 drivers.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 4,
+          "section": "Technical Specifications - Type of car"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-015",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What daily engagement hours and terrain are specified?",
+      "expected_answer": "24 hours per day; plain and hilly terrain.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 4,
+          "section": "Technical Specifications - Engagement Hours and Terrain"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-016",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What contract period does Bid Details give, and what deployment duration does the consignee table give?",
+      "expected_answer": "Bid Details: 3 years and 1 day. Consignee table: 36 months.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Contract Period"
+        },
+        {
+          "page": 5,
+          "section": "Consignees/Reporting Officer and Quantity - Duration"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-017",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "How many months longer is the stated ePBG duration than the stated deployment duration in the consignee table?",
+      "expected_answer": "3 months: ePBG is 39 months and deployment is 36 months.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "ePBG Detail - Duration"
+        },
+        {
+          "page": 5,
+          "section": "Consignees/Reporting Officer and Quantity - Duration"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-018",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "Under the applicable reverse charge mechanism, what GST must the seller enter, who pays it to the government, and what GST rate does the table list?",
+      "expected_answer": "The seller enters zero GST and GST cess. The buyer pays the government. The table lists 5% GST under RCM.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 3,
+          "section": "Section 9(3) Of GST"
+        },
+        {
+          "page": 5,
+          "section": "ITC and Reverse Charge Details"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-019",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "Who must pay staff wages first, what payment evidence is required for the buyer claim, and what standard bill-payment timeline is stated?",
+      "expected_answer": "The service provider pays first, then claims with PF/ESIC documents and the staff-payment bank statement. Payment is within 21 days of the service acceptance certificate and online bill submission.",
+      "answerable": true,
+      "evidence": [
+        {
+          "page": 6,
+          "section": "Payment - Salaries and Wages"
+        },
+        {
+          "page": 2,
+          "section": "Payment Timelines"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-020",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "Which company has already been selected as the winning bidder?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details"
+        },
+        {
+          "page": 6,
+          "section": "Disclaimer"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-021",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What exact minimum number of years of similar-service experience is stated in this PDF?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Document required from seller"
+        },
+        {
+          "page": 4,
+          "section": "Additional Qualification/Data Required - Eligibility Criteria"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-022",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What exact calendar date must the hired vehicle start its service?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 1,
+          "section": "Bid Details - Contract Period"
+        },
+        {
+          "page": 5,
+          "section": "Consignees/Reporting Officer and Quantity - Duration"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-023",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What daily hiring rate in rupees did the winning bidder actually quote?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 2,
+          "section": "Estimated Bid Value and Price Breakup"
+        },
+        {
+          "page": 4,
+          "section": "Minimum Floor Price defined by Buyer"
+        }
+      ]
+    },
+    {
+      "id": "T2-NEW-024",
+      "tender_id": "GEM/2026/B/8104613",
+      "question": "What fuel-reimbursement mileage in kilometres per litre is stated in this PDF?",
+      "expected_answer": "not found",
+      "answerable": false,
+      "evidence": [
+        {
+          "page": 4,
+          "section": "Technical Specifications - Fuel and Vintage in KM"
+        },
+        {
+          "page": 5,
+          "section": "Consignees/Reporting Officer and Quantity"
+        }
+      ]
+    }
+  ]
+}

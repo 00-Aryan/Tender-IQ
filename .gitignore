@@ -17,3 +17,8 @@ demo*
 # Local databases and vector stores
 *.db
 .chroma/
+outreach
+# Archived evaluation history and locally generated runs
+/archive/
+/src/tender_iq/evaluation/captures/
+/src/tender_iq/evaluation/scores/

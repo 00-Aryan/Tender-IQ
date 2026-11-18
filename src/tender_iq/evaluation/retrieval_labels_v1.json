@@ -1,0 +1,1287 @@
+{
+  "schema_version": 1,
+  "dataset_sha256": "9b467106f97b6df8e62337f24379773ce93dd9f564334784985c1a45f373ff69",
+  "capture_sha256": "d2a04afa16959c785a3301a766461c24f2f19044e147906b8406b3745d68bcef",
+  "metric": "precision_at_5_saved_union_order",
+  "k": 5,
+  "metric_rules": {
+    "metric_name": "Precision@5 over saved retrieval-union order",
+    "included_cases": "38 answerable cases",
+    "excluded_cases": "10 answerable=false cases",
+    "unit": "One retrieved chunk",
+    "relevant": "Directly supports at least one required answer component",
+    "not_relevant": "Does not support a required component, even if it is about the same tender",
+    "overview": "Excluded from retrieval ranking",
+    "denominator": "5 for every included case"
+  },
+  "included_cases": [
+    "T1-NEW-001",
+    "T1-NEW-002",
+    "T1-NEW-003",
+    "T1-NEW-004",
+    "T1-NEW-005",
+    "T1-NEW-006",
+    "T1-NEW-007",
+    "T1-NEW-008",
+    "T1-NEW-009",
+    "T1-NEW-010",
+    "T1-NEW-011",
+    "T1-NEW-012",
+    "T1-NEW-013",
+    "T1-NEW-014",
+    "T1-NEW-015",
+    "T1-NEW-016",
+    "T1-NEW-017",
+    "T1-NEW-018",
+    "T1-NEW-019",
+    "T2-NEW-001",
+    "T2-NEW-002",
+    "T2-NEW-003",
+    "T2-NEW-004",
+    "T2-NEW-005",
+    "T2-NEW-006",
+    "T2-NEW-007",
+    "T2-NEW-008",
+    "T2-NEW-009",
+    "T2-NEW-010",
+    "T2-NEW-011",
+    "T2-NEW-012",
+    "T2-NEW-013",
+    "T2-NEW-014",
+    "T2-NEW-015",
+    "T2-NEW-016",
+    "T2-NEW-017",
+    "T2-NEW-018",
+    "T2-NEW-019"
+  ],
+  "excluded_cases": {
+    "T1-NEW-020": "answerable=false",
+    "T1-NEW-021": "answerable=false",
+    "T1-NEW-022": "answerable=false",
+    "T1-NEW-023": "answerable=false",
+    "T1-NEW-024": "answerable=false",
+    "T2-NEW-020": "answerable=false",
+    "T2-NEW-021": "answerable=false",
+    "T2-NEW-022": "answerable=false",
+    "T2-NEW-023": "answerable=false",
+    "T2-NEW-024": "answerable=false"
+  },
+  "labels": {
+    "T1-NEW-001": [
+      {
+        "position": 1,
+        "chunk_id": "641ff8457777a178a5c5210ae9420edbef7e1a239b10ef6fc2d7cd7b6ce90892",
+        "relevant": false,
+        "reason": "Discusses past experience and estimated bid value; does not state the EMD amount."
+      },
+      {
+        "position": 2,
+        "chunk_id": "5111dacaa18e07309ec89eb88b0a6dd405a5666cebc8dcbc5d6dc305b6ce9e19",
+        "relevant": false,
+        "reason": "Discusses EMD exemption rules and policy; does not state the EMD amount."
+      },
+      {
+        "position": 3,
+        "chunk_id": "22613b7eb5c4ebb08cd6e2e895cfd04bbc42d86bc53592918a4912985d83bae5",
+        "relevant": false,
+        "reason": "Discusses FDR and PBG forms of security; does not state the EMD amount."
+      },
+      {
+        "position": 4,
+        "chunk_id": "5692fd7fc71a35f4337f9dc5a3ccff3f068069d28336cd1c5eed188facba8678",
+        "relevant": false,
+        "reason": "Details completed service percentage thresholds; does not state the EMD amount."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_12",
+        "relevant": false,
+        "reason": "Details TReDS payment and startup relaxation; does not state the EMD amount."
+      }
+    ],
+    "T1-NEW-002": [
+      {
+        "position": 1,
+        "chunk_id": "641ff8457777a178a5c5210ae9420edbef7e1a239b10ef6fc2d7cd7b6ce90892",
+        "relevant": false,
+        "reason": "Discusses past experience and estimated bid value; does not contain the bid deadline."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_41",
+        "relevant": false,
+        "reason": "Standard certificates clause; does not contain the bid deadline."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_48",
+        "relevant": false,
+        "reason": "File attachment reference for ATC; does not contain the bid deadline."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_18",
+        "relevant": false,
+        "reason": "Reference to bid confirmation sheet file; does not contain the bid deadline."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_14",
+        "relevant": false,
+        "reason": "Past experience percentage thresholds; does not contain the bid deadline."
+      }
+    ],
+    "T1-NEW-003": [
+      {
+        "position": 1,
+        "chunk_id": "GEM/2026/B/8085250_48",
+        "relevant": false,
+        "reason": "File attachment reference for ATC; does not state the bid opening time."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_13",
+        "relevant": false,
+        "reason": "Discusses past experience and estimated bid value; does not state the bid opening time."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_37",
+        "relevant": false,
+        "reason": "File attachment reference for scope of work; does not state the bid opening time."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_18",
+        "relevant": false,
+        "reason": "Reference to bid confirmation sheet file; does not state the bid opening time."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_41",
+        "relevant": false,
+        "reason": "Standard certificates clause; does not state the bid opening time."
+      }
+    ],
+    "T1-NEW-004": [
+      {
+        "position": 1,
+        "chunk_id": "641ff8457777a178a5c5210ae9420edbef7e1a239b10ef6fc2d7cd7b6ce90892",
+        "relevant": false,
+        "reason": "Mentions estimated bid value conceptually for guidance, but does not provide the figure."
+      },
+      {
+        "position": 2,
+        "chunk_id": "5692fd7fc71a35f4337f9dc5a3ccff3f068069d28336cd1c5eed188facba8678",
+        "relevant": false,
+        "reason": "Past experience percentage thresholds; does not state the estimated bid value."
+      },
+      {
+        "position": 3,
+        "chunk_id": "9963a0333601a649dc3313350bef7bc1ff0d4852c10b799b981c74cace67ce92",
+        "relevant": true,
+        "reason": "Directly states Estimated Bid Value in INR (Inclusive of all taxes) as 13502444."
+      },
+      {
+        "position": 4,
+        "chunk_id": "176b2b9fe745efe62526cedb6f71078d1f1eec7da84bbb6a73dd3a78382f1f88",
+        "relevant": false,
+        "reason": "Prohibited buyer disclaimer clauses; does not state the estimated bid value."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_48",
+        "relevant": false,
+        "reason": "Buyer added ATC file reference; does not state the estimated bid value."
+      }
+    ],
+    "T1-NEW-005": [
+      {
+        "position": 1,
+        "chunk_id": "GEM/2026/B/8085250_48",
+        "relevant": false,
+        "reason": "Buyer added ATC file reference; does not state the contract period."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_37",
+        "relevant": false,
+        "reason": "Scope of work file attachment reference; does not state the contract period."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_13",
+        "relevant": false,
+        "reason": "Mentions past experience and estimated bid value; does not state the contract period."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_42",
+        "relevant": false,
+        "reason": "Reference to buyer added text-based ATC clauses; does not state the contract period."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_18",
+        "relevant": false,
+        "reason": "Bid confirmation sheet reference; does not state the contract period."
+      }
+    ],
+    "T1-NEW-006": [
+      {
+        "position": 1,
+        "chunk_id": "176b2b9fe745efe62526cedb6f71078d1f1eec7da84bbb6a73dd3a78382f1f88",
+        "relevant": true,
+        "reason": "Directly lists clause 11 'Asking for any Tender fee / Bid Participation fee, as the case may be' under prohibited clauses."
+      },
+      {
+        "position": 2,
+        "chunk_id": "de30b24f7efd8e4de270408324a72434e2374402f1818a5f6b2bbc9bde36ba3a",
+        "relevant": true,
+        "reason": "Directly lists item 11 prohibiting tender/participation fees and details resulting null and void status."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_41",
+        "relevant": false,
+        "reason": "General certificates clause; does not discuss tender or participation fees."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_48",
+        "relevant": false,
+        "reason": "Labour codes compliance clause; does not discuss tender fees."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_37",
+        "relevant": false,
+        "reason": "TReDS and startup relaxation details; does not discuss tender fees."
+      }
+    ],
+    "T1-NEW-007": [
+      {
+        "position": 1,
+        "chunk_id": "641ff8457777a178a5c5210ae9420edbef7e1a239b10ef6fc2d7cd7b6ce90892",
+        "relevant": false,
+        "reason": "Discusses past experience requirement generally, but does not state the 7 years figure."
+      },
+      {
+        "position": 2,
+        "chunk_id": "5692fd7fc71a35f4337f9dc5a3ccff3f068069d28336cd1c5eed188facba8678",
+        "relevant": false,
+        "reason": "Past experience completed service value percentages; does not state required years."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_3",
+        "relevant": true,
+        "reason": "Directly states 'Years of Past Experience Required for same/similar service: 7 Year (s)'."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_55",
+        "relevant": false,
+        "reason": "Labour codes compliance clause; does not state experience years."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_12",
+        "relevant": false,
+        "reason": "TReDS and startup relaxation details; does not state experience years."
+      }
+    ],
+    "T1-NEW-008": [
+      {
+        "position": 1,
+        "chunk_id": "21ce2aed30786a35ff71ca0e64df45366955d6d9edcd874cab583bd50278191c",
+        "relevant": false,
+        "reason": "File attachment reference for ATC; does not list document categories required from seller."
+      },
+      {
+        "position": 2,
+        "chunk_id": "9963a0333601a649dc3313350bef7bc1ff0d4852c10b799b981c74cace67ce92",
+        "relevant": false,
+        "reason": "Estimated bid value and payment timelines; does not list documents required from seller."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_41",
+        "relevant": false,
+        "reason": "Generic certificates rejection clause; does not specify the bid details field entry."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_53",
+        "relevant": false,
+        "reason": "Prohibited disclaimer clauses; does not list documents required from seller."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_42",
+        "relevant": false,
+        "reason": "Heading for buyer added text-based ATC; does not list required document categories."
+      }
+    ],
+    "T1-NEW-009": [
+      {
+        "position": 1,
+        "chunk_id": "641ff8457777a178a5c5210ae9420edbef7e1a239b10ef6fc2d7cd7b6ce90892",
+        "relevant": false,
+        "reason": "Discusses past experience and estimated bid value; does not contain the MSE relaxation field."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_3",
+        "relevant": true,
+        "reason": "Directly contains 'MSE Relaxation for Years of Experience and Turnover: No'."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_12",
+        "relevant": false,
+        "reason": "Covers TReDS payment and startup experience relaxation; does not support the MSE field value."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_20",
+        "relevant": false,
+        "reason": "File reference to scope of work; does not mention MSE relaxation."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_43",
+        "relevant": false,
+        "reason": "Covers performance security requirements; unrelated to MSE relaxation."
+      }
+    ],
+    "T1-NEW-010": [
+      {
+        "position": 1,
+        "chunk_id": "2fb61db7d59098bcec96f982484918628ec8eb05dd2e2d9c72d5459128694ffc",
+        "relevant": false,
+        "reason": "Labour codes compliance; does not state startup relaxation conditions."
+      },
+      {
+        "position": 2,
+        "chunk_id": "641ff8457777a178a5c5210ae9420edbef7e1a239b10ef6fc2d7cd7b6ce90892",
+        "relevant": false,
+        "reason": "General past experience clause; does not state startup relaxation conditions."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_12",
+        "relevant": true,
+        "reason": "Directly states startup relaxation conditions: meeting quality/technical specifications and uploading supporting documents."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_3",
+        "relevant": true,
+        "reason": "Directly contains the condition that supporting documents must be uploaded for evaluation."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_35",
+        "relevant": false,
+        "reason": "EMD exemption rules; does not state experience criteria relaxation conditions."
+      }
+    ],
+    "T1-NEW-011": [
+      {
+        "position": 1,
+        "chunk_id": "5692fd7fc71a35f4337f9dc5a3ccff3f068069d28336cd1c5eed188facba8678",
+        "relevant": true,
+        "reason": "Directly contains the 40%, 50%, and 80% completed-service value thresholds for Past Experience of Similar Services."
+      },
+      {
+        "position": 2,
+        "chunk_id": "cdd93d0de85192bc284c0605e694853ebfa1ad210b59b5398a6d6949de704093",
+        "relevant": false,
+        "reason": "Mentions past experience is required (Yes), but contains none of the percentage thresholds."
+      },
+      {
+        "position": 3,
+        "chunk_id": "641ff8457777a178a5c5210ae9420edbef7e1a239b10ef6fc2d7cd7b6ce90892",
+        "relevant": false,
+        "reason": "General past experience clause; does not list the 40%, 50%, 80% thresholds."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_55",
+        "relevant": false,
+        "reason": "Labour codes and general contract terms; does not contain service value thresholds."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_12",
+        "relevant": false,
+        "reason": "TReDS and startup relaxation; does not contain similar service percentage thresholds."
+      }
+    ],
+    "T1-NEW-012": [
+      {
+        "position": 1,
+        "chunk_id": "7f6d237001544e9263bfe2167e6edf65a27965bd3bda88a9a71e7309cfd15c0a",
+        "relevant": true,
+        "reason": "Directly states 'Engagement Hours per Day: 8-12 hours' for Mahindra Scorpio or Equivalent."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_25",
+        "relevant": false,
+        "reason": "Consignee table for vehicle quantity 1 and Bolero specs; does not state Scorpio daily engagement hours."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_24",
+        "relevant": false,
+        "reason": "Minimum floor price and ITC/RCM details; does not state engagement hours."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_7",
+        "relevant": false,
+        "reason": "Estimated bid value and payment timelines; does not state engagement hours."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_0",
+        "relevant": false,
+        "reason": "Scope of work file attachment reference; does not state engagement hours."
+      }
+    ],
+    "T1-NEW-013": [
+      {
+        "position": 1,
+        "chunk_id": "7f6d237001544e9263bfe2167e6edf65a27965bd3bda88a9a71e7309cfd15c0a",
+        "relevant": false,
+        "reason": "Scorpio technical specifications; does not contain the consignee table or monthly kilometres."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_25",
+        "relevant": true,
+        "reason": "Directly contains the consignee table showing 1 vehicle with 'Estimated KMs to be traveled in a month: 2250'."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_28",
+        "relevant": false,
+        "reason": "Consignee table for the 3-vehicle group (1995 km); does not apply to the single vehicle group."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_30",
+        "relevant": false,
+        "reason": "Minimum floor price and ITC details; does not contain monthly kilometres."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_31",
+        "relevant": false,
+        "reason": "Consignee table for 2 vehicles (2500 km); does not apply to the single Scorpio group."
+      }
+    ],
+    "T1-NEW-014": [
+      {
+        "position": 1,
+        "chunk_id": "GEM/2026/B/8085250_29",
+        "relevant": false,
+        "reason": "Bolero technical specifications; does not contain the consignee table or monthly kilometres."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_25",
+        "relevant": false,
+        "reason": "Consignee table for 1 vehicle (2250 km); does not apply to the three-vehicle group."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_28",
+        "relevant": true,
+        "reason": "Directly contains the consignee table showing 3 vehicles with 'Estimated KMs to be traveled in a month: 1995'."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_26",
+        "relevant": false,
+        "reason": "Vehicle specification table; does not contain the consignee table or monthly kilometres."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_22",
+        "relevant": false,
+        "reason": "Technical specifications for Scorpio; does not apply to the three-vehicle Bolero group."
+      }
+    ],
+    "T1-NEW-015": [
+      {
+        "position": 1,
+        "chunk_id": "d27bf6c9fed334ec45b65f8c6597dfc83e7b6ad6e5467e523cc26e6d3a5bef4b",
+        "relevant": false,
+        "reason": "Diesel running cost reimbursement; does not state kilometres or deployment duration."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_29",
+        "relevant": false,
+        "reason": "Bolero technical specifications; does not contain the consignee table for the 2-vehicle group."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_28",
+        "relevant": false,
+        "reason": "Consignee table for the 3-vehicle group (1995 km); does not apply to the two-vehicle group."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_25",
+        "relevant": false,
+        "reason": "Consignee table for the 1-vehicle group (2250 km); does not apply to the two-vehicle group."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_22",
+        "relevant": false,
+        "reason": "Scorpio technical specifications; does not apply to the two-vehicle Bolero group."
+      }
+    ],
+    "T1-NEW-016": [
+      {
+        "position": 1,
+        "chunk_id": "GEM/2026/B/8085250_29",
+        "relevant": false,
+        "reason": "Bolero specifications; does not establish a required group count."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_22",
+        "relevant": true,
+        "reason": "Scorpio heading indicates the one-vehicle group '( 1 )'."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_26",
+        "relevant": false,
+        "reason": "Technical details; does not contain a group count."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_44",
+        "relevant": false,
+        "reason": "Diesel running cost reimbursement; does not contain vehicle count."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_45",
+        "relevant": false,
+        "reason": "Driver wages and EPF reimbursement; does not contain vehicle count."
+      }
+    ],
+    "T1-NEW-017": [
+      {
+        "position": 1,
+        "chunk_id": "5111dacaa18e07309ec89eb88b0a6dd405a5666cebc8dcbc5d6dc305b6ce9e19",
+        "relevant": true,
+        "reason": "Directly states that under MSE category, service providers are eligible for EMD exemption with valid documents and traders are excluded."
+      },
+      {
+        "position": 2,
+        "chunk_id": "77786f212bf5607cff0e40bf7e86deaf2f38c664a1e5c3934971b4ffce003f06",
+        "relevant": false,
+        "reason": "Section 9(3) of GST; does not address EMD exemption."
+      },
+      {
+        "position": 3,
+        "chunk_id": "641ff8457777a178a5c5210ae9420edbef7e1a239b10ef6fc2d7cd7b6ce90892",
+        "relevant": false,
+        "reason": "General past experience and estimated bid value; does not address EMD exemption."
+      },
+      {
+        "position": 4,
+        "chunk_id": "22613b7eb5c4ebb08cd6e2e895cfd04bbc42d86bc53592918a4912985d83bae5",
+        "relevant": false,
+        "reason": "Forms of EMD and PBG; does not state MSE service provider eligibility or trader exclusion."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_3",
+        "relevant": true,
+        "reason": "Directly contains 'MSE Relaxation for Years of Experience and Turnover: No', supporting the reference premise."
+      }
+    ],
+    "T1-NEW-018": [
+      {
+        "position": 1,
+        "chunk_id": "d27bf6c9fed334ec45b65f8c6597dfc83e7b6ad6e5467e523cc26e6d3a5bef4b",
+        "relevant": true,
+        "reason": "Directly states that contractor pays diesel running cost first and CCL reimburses along with monthly bill."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_26",
+        "relevant": false,
+        "reason": "Tech specs stating fuel reimbursed as per actual consumption, but misses contractor paying first and reimbursement details."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_45",
+        "relevant": false,
+        "reason": "Covers driver wages and EPF; does not address diesel running cost."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_29",
+        "relevant": false,
+        "reason": "Bolero technical specifications; does not cover payment timelines."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_7",
+        "relevant": true,
+        "reason": "Directly states payments within 21 days of issue of SDAC and online submission of bills."
+      }
+    ],
+    "T1-NEW-019": [
+      {
+        "position": 1,
+        "chunk_id": "77786f212bf5607cff0e40bf7e86deaf2f38c664a1e5c3934971b4ffce003f06",
+        "relevant": false,
+        "reason": "Section 9(3) GST and MSE preference in ATC; does not address ePBG or performance security deposit."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8085250_35",
+        "relevant": false,
+        "reason": "Mentions FDR form of PBG, but does not state ePBG required No or the ATC deposit requirement."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8085250_42",
+        "relevant": false,
+        "reason": "Header for buyer added text-based ATC clauses; does not state the performance security terms."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8085250_45",
+        "relevant": false,
+        "reason": "Driver wages and EPF reimbursement; does not cover performance security."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8085250_3",
+        "relevant": false,
+        "reason": "Bid details table showing MSE/startup relaxation; does not contain the ePBG field or ATC clause."
+      }
+    ],
+    "T2-NEW-001": [
+      {
+        "position": 1,
+        "chunk_id": "e822e7ebc5401c4e75e7dfe76cb2813cc351928770fb99a25334f4912c07d885",
+        "relevant": false,
+        "reason": "MII compliance, TReDS, and guidance on EMD amount; does not state the EMD figure 37700."
+      },
+      {
+        "position": 2,
+        "chunk_id": "6ae7d02c03c25ca6b96946ac3d44d2b8b825e8609a965405325faca3f7ec5641",
+        "relevant": false,
+        "reason": "EMD exemption rules; does not state the EMD amount."
+      },
+      {
+        "position": 3,
+        "chunk_id": "8cf046325a89f120a7c16b91c079ba1e306d6b59d33685a2f2d1602d9b8399f1",
+        "relevant": false,
+        "reason": "MSE purchase preference price band; does not state the EMD amount."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_39",
+        "relevant": false,
+        "reason": "General labour obligations; does not state the EMD amount."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_36",
+        "relevant": false,
+        "reason": "Prohibited disclaimer clauses; does not state the EMD amount."
+      }
+    ],
+    "T2-NEW-002": [
+      {
+        "position": 1,
+        "chunk_id": "6b9e3c069bf3b33a4a7c5a29c45e5787925f2b9b3c9f6205132dee8778da4d2e",
+        "relevant": false,
+        "reason": "Prohibited PAC buying and qualification clauses; does not state the submission deadline."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8104613_29",
+        "relevant": false,
+        "reason": "Generic certificates rejection clause; does not state the submission deadline."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_32",
+        "relevant": false,
+        "reason": "Buyer added ATC file link; does not state the submission deadline."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_6",
+        "relevant": false,
+        "reason": "Bid Details table covering auto-extension and estimated bid value; does not contain bid end date/time."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_39",
+        "relevant": false,
+        "reason": "Labour obligations clause; does not state the submission deadline."
+      }
+    ],
+    "T2-NEW-003": [
+      {
+        "position": 1,
+        "chunk_id": "GEM/2026/B/8104613_32",
+        "relevant": false,
+        "reason": "Buyer added ATC file link; does not state the bid opening time."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8104613_33",
+        "relevant": false,
+        "reason": "Scope of work file link; does not state the bid opening time."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_6",
+        "relevant": false,
+        "reason": "Bid Details table covering auto-extension and estimated bid value; does not contain opening date/time."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_35",
+        "relevant": false,
+        "reason": "Prohibited disclaimer clauses; does not state the bid opening time."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_29",
+        "relevant": false,
+        "reason": "Standard certificates rejection clause; does not state the bid opening time."
+      }
+    ],
+    "T2-NEW-004": [
+      {
+        "position": 1,
+        "chunk_id": "00a5096ce69548534259f0ebb3b83a5f51e221359c4ccc1c6dfae29eb4b43b1c",
+        "relevant": false,
+        "reason": "Prohibited disclaimer clauses; does not state the estimated bid value."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8104613_13",
+        "relevant": false,
+        "reason": "Mentions estimated bid value conceptually for guidance, but does not provide the figure."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_25",
+        "relevant": false,
+        "reason": "MSE purchase preference price band; does not state the estimated bid value."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_32",
+        "relevant": false,
+        "reason": "Buyer added ATC file link; does not state the estimated bid value."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_39",
+        "relevant": false,
+        "reason": "Labour obligations clause; does not state the estimated bid value."
+      }
+    ],
+    "T2-NEW-005": [
+      {
+        "position": 1,
+        "chunk_id": "7bf7712bfbe1ce190b737cd4b6abf30077734a90bf9c8a11cb3cb4a5ca45f510",
+        "relevant": false,
+        "reason": "General labour obligations; does not state the contract period."
+      },
+      {
+        "position": 2,
+        "chunk_id": "76e7250b4fb8b85b0102489076a7e68acc510c65c9a469662cfb76f1eb238c77",
+        "relevant": false,
+        "reason": "Option clause 25% duration variation; does not state the contract period in Bid Details."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_32",
+        "relevant": false,
+        "reason": "Buyer added ATC file link; does not state the contract period."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_33",
+        "relevant": false,
+        "reason": "Scope of work file link; does not state the contract period."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_6",
+        "relevant": false,
+        "reason": "Bid details table covering auto-extension and estimated bid value; does not contain contract period."
+      }
+    ],
+    "T2-NEW-006": [
+      {
+        "position": 1,
+        "chunk_id": "00a5096ce69548534259f0ebb3b83a5f51e221359c4ccc1c6dfae29eb4b43b1c",
+        "relevant": true,
+        "reason": "Directly lists clause 11 'Asking for any Tender fee / Bid Participation fee, as the case may be' under prohibited clauses."
+      },
+      {
+        "position": 2,
+        "chunk_id": "8d034daa36c3b7ef54414e5a277a579eae3fa7aeffccabb17ee584dbc305dbab",
+        "relevant": false,
+        "reason": "Grievance and representation process; does not specify the tender fee prohibition."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_39",
+        "relevant": false,
+        "reason": "Labour statutory obligations; does not discuss tender fees."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_29",
+        "relevant": false,
+        "reason": "Certificates clause; does not discuss tender fees."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_32",
+        "relevant": false,
+        "reason": "Buyer added ATC file link; does not discuss tender fees."
+      }
+    ],
+    "T2-NEW-007": [
+      {
+        "position": 1,
+        "chunk_id": "8cf046325a89f120a7c16b91c079ba1e306d6b59d33685a2f2d1602d9b8399f1",
+        "relevant": false,
+        "reason": "Discusses MSE purchase preference price matching; does not state relaxation field values."
+      },
+      {
+        "position": 2,
+        "chunk_id": "76e7250b4fb8b85b0102489076a7e68acc510c65c9a469662cfb76f1eb238c77",
+        "relevant": false,
+        "reason": "Option clause 25%; does not state relaxation field values."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_3",
+        "relevant": true,
+        "reason": "Directly contains explicit 'No' values for Startup Relaxation and MSE Relaxation for Years of Experience and Turnover."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_24",
+        "relevant": false,
+        "reason": "Purchase preference policy overview; does not contain relaxation field values."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_38",
+        "relevant": false,
+        "reason": "Labour codes compliance; does not contain relaxation field values."
+      }
+    ],
+    "T2-NEW-008": [
+      {
+        "position": 1,
+        "chunk_id": "50fb753623b9d06dfbe147716f3aa6578c10c689f86467efb3bb104caa795177",
+        "relevant": true,
+        "reason": "Directly contains 'Document required from seller' field with value 'Certificate (Requested in ATC)'."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8104613_39",
+        "relevant": false,
+        "reason": "General statutory wage and labour obligations; does not state documents required from seller."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_29",
+        "relevant": false,
+        "reason": "Generic certificates rejection clause; does not contain the specific field entry."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_23",
+        "relevant": false,
+        "reason": "Generic sub-contracting and assignment clause; does not list documents required from seller."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_32",
+        "relevant": false,
+        "reason": "Buyer added ATC file link; does not list documents required from seller."
+      }
+    ],
+    "T2-NEW-009": [
+      {
+        "position": 1,
+        "chunk_id": "8cf046325a89f120a7c16b91c079ba1e306d6b59d33685a2f2d1602d9b8399f1",
+        "relevant": true,
+        "reason": "Directly states that relevant documentary evidence must be uploaded along with the bid."
+      },
+      {
+        "position": 2,
+        "chunk_id": "e0bcb7df6217c02d9d7c49fc549f638b6e7b261da8e75b1b6380df3678f621fa",
+        "relevant": false,
+        "reason": "Section 9(3) GST clause; mentions ATC preference documents generally but lacks service provider rules."
+      },
+      {
+        "position": 3,
+        "chunk_id": "63dc5317f2e27be0b4293dc816ff0bbc051d334f296c1099105b37eb0601335c",
+        "relevant": true,
+        "reason": "Directly states bidder must be service provider, traders are excluded, and documentary evidence must be uploaded."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_32",
+        "relevant": false,
+        "reason": "Buyer added ATC file link; does not state MSE purchase preference eligibility."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_13",
+        "relevant": false,
+        "reason": "MII and TReDS payment details; does not state MSE purchase preference eligibility."
+      }
+    ],
+    "T2-NEW-010": [
+      {
+        "position": 1,
+        "chunk_id": "5e7b201b524f2104a2c5775a0f43d95b033ddcf46b29e04f209045ae46ae4866",
+        "relevant": true,
+        "reason": "Directly states 50% minimum local content and requirement for OEM certificate stating percentage and locations."
+      },
+      {
+        "position": 2,
+        "chunk_id": "8dc5c2a3e1ef48c79b0eda91304e345e9582f65498b448682c7fb6f187a26b49",
+        "relevant": false,
+        "reason": "Notes Class-I and Class-II supplier eligibility and MSE precedence; does not state percentage or OEM certificate."
+      },
+      {
+        "position": 3,
+        "chunk_id": "e0bcb7df6217c02d9d7c49fc549f638b6e7b261da8e75b1b6380df3678f621fa",
+        "relevant": false,
+        "reason": "Section 9(3) of GST; does not address Class-I local supplier criteria."
+      },
+      {
+        "position": 4,
+        "chunk_id": "8cf046325a89f120a7c16b91c079ba1e306d6b59d33685a2f2d1602d9b8399f1",
+        "relevant": false,
+        "reason": "MSE purchase preference price matching; does not address Make in India local content."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_29",
+        "relevant": false,
+        "reason": "Certificates clause; does not state local content percentage or OEM certificate requirement."
+      }
+    ],
+    "T2-NEW-011": [
+      {
+        "position": 1,
+        "chunk_id": "acb55cd1ba372b7151cd4d7b301d1db588decf735327897b36fd031be28282cd",
+        "relevant": true,
+        "reason": "Directly states 'Bidder's offer is liable to be rejected if they don't upload any of the certificates / documents sought in the Bid document, ATC and Corrigendum if any'."
+      },
+      {
+        "position": 2,
+        "chunk_id": "e0bcb7df6217c02d9d7c49fc549f638b6e7b261da8e75b1b6380df3678f621fa",
+        "relevant": false,
+        "reason": "Section 9(3) GST clause; does not state offer rejection rule."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_39",
+        "relevant": false,
+        "reason": "Labour statutory obligations; does not state rejection rule for missing certificates."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_35",
+        "relevant": false,
+        "reason": "Prohibited disclaimer clauses; does not state rejection rule for missing documents."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_32",
+        "relevant": false,
+        "reason": "Buyer added ATC file link; does not state rejection rule."
+      }
+    ],
+    "T2-NEW-012": [
+      {
+        "position": 1,
+        "chunk_id": "76e7250b4fb8b85b0102489076a7e68acc510c65c9a469662cfb76f1eb238c77",
+        "relevant": false,
+        "reason": "Option clause 25%; does not contain ePBG percentage or duration."
+      },
+      {
+        "position": 2,
+        "chunk_id": "8cf046325a89f120a7c16b91c079ba1e306d6b59d33685a2f2d1602d9b8399f1",
+        "relevant": false,
+        "reason": "MSE purchase preference price band; does not contain ePBG percentage or duration."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_8",
+        "relevant": true,
+        "reason": "Directly states 'ePBG Percentage(%) 5.00' and 'Duration of ePBG required (Months) 39'."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_6",
+        "relevant": false,
+        "reason": "Bid details table (auto extension, estimated bid value); does not contain ePBG details."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_3",
+        "relevant": false,
+        "reason": "Bid details table (startup relaxation, document required); does not contain ePBG details."
+      }
+    ],
+    "T2-NEW-013": [
+      {
+        "position": 1,
+        "chunk_id": "76e7250b4fb8b85b0102489076a7e68acc510c65c9a469662cfb76f1eb238c77",
+        "relevant": false,
+        "reason": "Option clause 25%; does not contain vehicle count or consignee kilometres."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8104613_18",
+        "relevant": false,
+        "reason": "Technical specification table; specifies monthly running limit 2000 KMs in description, but lacks vehicle count."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_17",
+        "relevant": true,
+        "reason": "Service title directly specifies vehicle quantity '( 1 )' and monthly running limit 2000 KMs."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_6",
+        "relevant": false,
+        "reason": "Bid details table (auto extension, estimated bid value); does not contain vehicle count."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_19",
+        "relevant": false,
+        "reason": "Minimum floor price and ITC details; does not contain vehicle count or monthly kilometres."
+      }
+    ],
+    "T2-NEW-014": [
+      {
+        "position": 1,
+        "chunk_id": "5e7b201b524f2104a2c5775a0f43d95b033ddcf46b29e04f209045ae46ae4866",
+        "relevant": false,
+        "reason": "Make In India local supplier rules; does not state vehicle engine capacity or driver count."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8104613_18",
+        "relevant": true,
+        "reason": "Directly states 'One Diesel Driven Utility Van 2179 CC or Above with Two Drivers for 24Hour Operation'."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_17",
+        "relevant": true,
+        "reason": "Service title directly states 'One Diesel Driven Utility Van 2179 CC Or Above With Two Drivers'."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_6",
+        "relevant": false,
+        "reason": "Bid details table (auto extension, estimated bid value); does not state engine capacity."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_39",
+        "relevant": false,
+        "reason": "Minimum floor price and ITC details; does not state engine capacity or driver count."
+      }
+    ],
+    "T2-NEW-015": [
+      {
+        "position": 1,
+        "chunk_id": "76e7250b4fb8b85b0102489076a7e68acc510c65c9a469662cfb76f1eb238c77",
+        "relevant": false,
+        "reason": "Labour codes compliance; does not state contract duration."
+      },
+      {
+        "position": 2,
+        "chunk_id": "5fde423c970b0a81ee62f47be809f8e3cc7641ee4d37b9882293fcf72090ddf1",
+        "relevant": false,
+        "reason": "Labour codes compliance; does not state contract duration."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_6",
+        "relevant": false,
+        "reason": "Bid Details table covering auto extension and estimated bid value; does not contain contract duration."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_2",
+        "relevant": true,
+        "reason": "Directly states 'Contract Period: 3 Year(s) 1 Day(s)' supporting the deployment duration."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_18",
+        "relevant": false,
+        "reason": "Technical specifications table (24 hours, plain/hilly terrain); does not state contract duration."
+      }
+    ],
+    "T2-NEW-016": [
+      {
+        "position": 1,
+        "chunk_id": "76e7250b4fb8b85b0102489076a7e68acc510c65c9a469662cfb76f1eb238c77",
+        "relevant": false,
+        "reason": "Option clause 25%; does not contain Bid Details contract period or consignee duration."
+      },
+      {
+        "position": 2,
+        "chunk_id": "7bf7712bfbe1ce190b737cd4b6abf30077734a90bf9c8a11cb3cb4a5ca45f510",
+        "relevant": false,
+        "reason": "Statutory labour obligations; does not contain contract period or deployment duration."
+      },
+      {
+        "position": 3,
+        "chunk_id": "e0c164c99beee88f69451b9a03fef6e4f32325fb8c356b85c44a590f3be7c41a",
+        "relevant": false,
+        "reason": "Disclaimer on ATC clauses; does not contain contract period or deployment duration."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_6",
+        "relevant": false,
+        "reason": "Bid Details table covering auto extension and estimated bid value; does not contain contract period."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_32",
+        "relevant": false,
+        "reason": "Buyer added ATC file link; does not contain contract period or deployment duration."
+      }
+    ],
+    "T2-NEW-017": [
+      {
+        "position": 1,
+        "chunk_id": "76e7250b4fb8b85b0102489076a7e68acc510c65c9a469662cfb76f1eb238c77",
+        "relevant": false,
+        "reason": "Option clause 25%; does not contain ePBG duration or deployment duration."
+      },
+      {
+        "position": 2,
+        "chunk_id": "GEM/2026/B/8104613_6",
+        "relevant": false,
+        "reason": "Bid Details table covering auto extension and estimated bid value; does not contain durations."
+      },
+      {
+        "position": 3,
+        "chunk_id": "GEM/2026/B/8104613_8",
+        "relevant": true,
+        "reason": "Directly contains 'Duration of ePBG required (Months): 39', supporting one required answer component."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_3",
+        "relevant": false,
+        "reason": "Bid details table (startup relaxation, document required); does not contain ePBG or deployment duration."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_2",
+        "relevant": false,
+        "reason": "Bid details item category and contract period; does not state ePBG duration or consignee duration."
+      }
+    ],
+    "T2-NEW-018": [
+      {
+        "position": 1,
+        "chunk_id": "b9646defe8a0cabe3abf927f99df1790bd5621775bff50038a4c0803338e3d84",
+        "relevant": true,
+        "reason": "Directly states that sellers will be forced to put Zero GST and GST cess, and buyer has liability of paying GST and cess to government."
+      },
+      {
+        "position": 2,
+        "chunk_id": "e0bcb7df6217c02d9d7c49fc549f638b6e7b261da8e75b1b6380df3678f621fa",
+        "relevant": true,
+        "reason": "Directly states that sellers will be forced to put Zero GST and GST cess, and buyer has liability of paying GST and cess to government."
+      },
+      {
+        "position": 3,
+        "chunk_id": "7bf7712bfbe1ce190b737cd4b6abf30077734a90bf9c8a11cb3cb4a5ca45f510",
+        "relevant": false,
+        "reason": "Statutory labour obligations; does not address RCM or GST requirements."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_13",
+        "relevant": false,
+        "reason": "MII compliance and TReDS payment details; does not contain RCM GST obligations."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_19",
+        "relevant": false,
+        "reason": "Floor price and ITC header (table body truncated); does not state seller zero GST entry or buyer liability."
+      }
+    ],
+    "T2-NEW-019": [
+      {
+        "position": 1,
+        "chunk_id": "552925ce0741509e374a80ee5c8ecbeb7bf94709fd2d908c1e7f8e43c6aeb1d1",
+        "relevant": true,
+        "reason": "Directly states that Service Provider is required to pay wages first and claim from Buyer with PF, ESIC, and bank statement."
+      },
+      {
+        "position": 2,
+        "chunk_id": "8cf046325a89f120a7c16b91c079ba1e306d6b59d33685a2f2d1602d9b8399f1",
+        "relevant": false,
+        "reason": "MSE purchase preference price matching; does not cover wages payment or evidence."
+      },
+      {
+        "position": 3,
+        "chunk_id": "63dc5317f2e27be0b4293dc816ff0bbc051d334f296c1099105b37eb0601335c",
+        "relevant": false,
+        "reason": "MSE purchase preference policy rules; does not cover wages payment or evidence."
+      },
+      {
+        "position": 4,
+        "chunk_id": "GEM/2026/B/8104613_39",
+        "relevant": false,
+        "reason": "General statutory wage obligations; does not state the specific payment sequence or required claim evidence."
+      },
+      {
+        "position": 5,
+        "chunk_id": "GEM/2026/B/8104613_33",
+        "relevant": false,
+        "reason": "Scope of work file link; does not cover wages payment or evidence."
+      }
+    ]
+  }
+}
