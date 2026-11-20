@@ -16,7 +16,12 @@ demo*
 
 # Local databases and vector stores
 *.db
+*.sqlite
+*.sqlite3
 .chroma/
+chroma/
+chroma_db/
+*.pdf
 outreach
 # Archived evaluation history and locally generated runs
 /archive/

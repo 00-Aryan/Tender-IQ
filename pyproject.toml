@@ -47,3 +47,7 @@ torch = { index = "pytorch" }
 
 [tool.uv]
 environments = ["sys_platform == 'linux'"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["archive", ".chroma", "data"]

@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from tender_iq.db.session import engine, Base
-from tender_iq.db import models 
+from tender_iq.db import models  # noqa: F401  # Registers SQLAlchemy models with Base.metadata
 
 # 3. Import your routers 
 from tender_iq.api.v1.endpoints import tenders, chat
